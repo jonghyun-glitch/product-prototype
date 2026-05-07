@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>타다 라이더 — Dev Guide</title>
+<style>
+/* ════════════ Guide Styles ════════════ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  background: #F0F2F5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+/* ── 헤더 ── */
+.header {
+  width: 100%;
+  background: #19254D;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.header-logo {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.3px;
+}
+.header-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  margin-left: 4px;
+}
+
+/* ── 메인 레이아웃 ── */
+.main {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+  padding: 40px 32px;
+  width: 100%;
+  max-width: 1280px;
+}
+
+/* ── 프로토타입 패널 ── */
+.prototype-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.panel-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #73788B;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+/* ── 콘솔 패널 ── */
+.console-panel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: #1E2130;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+}
+
+/* 콘솔 탭바 */
+.console-tabs {
+  display: flex;
+  background: #161828;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  padding: 0 16px;
+  gap: 0;
+  flex-shrink: 0;
+}
+.console-tab {
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  user-select: none;
+}
+.console-tab:hover { color: rgba(255,255,255,0.7); }
+.console-tab.active {
+  color: #7EC8FB;
+  border-bottom-color: #7EC8FB;
+}
+.platform-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.badge-ios { background: rgba(100,210,255,0.15); color: #64D2FF; }
+.badge-android { background: rgba(160,220,100,0.15); color: #A8D880; }
+
+/* 콘솔 콘텐츠 */
+.console-content {
+  display: none;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: calc(100vh - 200px);
+}
+.console-content.active { display: flex; }
+
+/* 섹션 */
+.guide-section {
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 24px 28px;
+}
+.guide-section:last-child { border-bottom: none; }
+
+.section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #7EC8FB;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 12px;
+  background: #7EC8FB;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* 스펙 테이블 */
+.spec-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+.spec-table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.3);
+  padding: 4px 12px 8px 0;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.spec-table td {
+  padding: 5px 12px 5px 0;
+  vertical-align: top;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.spec-table tr:last-child td { border-bottom: none; }
+.spec-key {
+  color: #A8D880;
+  font-family: "SF Mono", "Fira Code", monospace;
+  font-size: 12px;
+  white-space: nowrap;
+  min-width: 180px;
+}
+.spec-val {
+  color: #FFD580;
+  font-family: "SF Mono", "Fira Code", monospace;
+  font-size: 12px;
+}
+.spec-desc {
+  color: rgba(255,255,255,0.45);
+  font-size: 12px;
+  padding-left: 8px;
+}
+
+/* 코드 블록 */
+.code-block {
+  background: #131520;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 8px;
+  overflow-x: auto;
+}
+.code-block pre {
+  font-family: "SF Mono", "Fira Code", "Fira Mono", monospace;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: #CDD6F4;
+  white-space: pre;
+  margin: 0;
+}
+/* syntax highlight */
+.kw  { color: #CBA6F7; } /* keyword */
+.fn  { color: #89B4FA; } /* function */
+.st  { color: #A6E3A1; } /* string */
+.nm  { color: #FAB387; } /* number/value */
+.cm  { color: #585B70; font-style: italic; } /* comment */
+.tp  { color: #89DCEB; } /* type */
+.pr  { color: #F38BA8; } /* property */
+
+/* 설명 텍스트 */
+.guide-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+.guide-desc strong { color: rgba(255,255,255,0.8); font-weight: 600; }
+
+/* 노트 박스 */
+.note-box {
+  background: rgba(126,200,251,0.06);
+  border: 1px solid rgba(126,200,251,0.15);
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.6;
+  margin-top: 12px;
+}
+.note-box strong { color: #7EC8FB; }
+
+
+/* ════════════ App (Prototype) Styles ════════════ */
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:#f0f0f0;display:flex;justify-content:center;padding:24px;font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;}
+.app{position:relative;width:393px;}
+.page{position:absolute;top:0;left:0;width:393px;transition:transform 0.35s cubic-bezier(0.4,0,0.2,1),opacity 0.35s cubic-bezier(0.4,0,0.2,1);will-change:transform,opacity;}
+.page-main{transform:translateX(0);opacity:1;z-index:1;position:relative;}
+.page-main.slide-out{transform:translateX(-30%);opacity:0;pointer-events:none;position:absolute;}
+.page-profile{transform:translateX(100%);opacity:0;z-index:2;pointer-events:none;}
+.page-profile.slide-in{transform:translateX(0);opacity:1;pointer-events:auto;}
+/* shimmer styles */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  gap: 20px;
+  font-family: -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+}
+
+/* ── 전환 버튼 ── */
+.toggle-wrap {
+  display: flex;
+  background: #E2E4E9;
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+}
+.toggle-btn {
+  padding: 9px 20px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  color: #73788B;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  font-family: inherit;
+}
+.toggle-btn.active {
+  background: #fff;
+  color: #262A38;
+  box-shadow: 0px 1px 4px rgba(0,0,0,0.12);
+}
+
+/* ── 라벨 ── */
+.label-wrap {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.label-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: #32A2FA;
+  border-radius: 100px;
+  padding: 2px 10px;
+  line-height: 20px;
+}
+.label-desc {
+  font-size: 13px;
+  color: #73788B;
+}
+
+/* ── 화면 ── */
+.screen {
+  position: relative; width: 393px; height: 852px;
+  background: #E9E9E9; overflow: hidden;
+  border-radius: 40px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+.map-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.25) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.25) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.statusbar { position: absolute; top: 0; left: 0; right: 0; height: 36px; }
+.status-time { position: absolute; left: 24px; top: 50%; transform: translateY(-50%); font-size: 13px; color: rgba(0,0,0,0.7); letter-spacing: -0.2px; }
+.status-icons { position: absolute; right: 22.87px; top: calc(50% + 1.5px); transform: translateY(-50%); width: 25.549px; height: 11.021px; background: #888; border-radius: 2px; }
+.home-btn { position: absolute; left: 15px; top: 46px; width: 34px; height: 34px; background: #fff; border-radius: 50%; box-shadow: 0px 1px 4px rgba(0,0,0,0.18); display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; }
+.car-marker { position: absolute; top: 161px; left: 101px; width: 30px; height: 52px; }
+.start-marker { position: absolute; top: 198px; left: 248px; width: 59px; height: 61px; display: flex; flex-direction: column; align-items: center; filter: drop-shadow(0px 2px 3px rgba(0,0,0,0.25)); }
+.marker-bubble { background: #283873; border-radius: 100px; padding: 6px 12px; white-space: nowrap; }
+.marker-bubble-text { font-size: 12px; font-weight: 700; color: #fff; line-height: 18px; }
+.marker-arrow { width: 10px; height: 10px; background: #283873; transform: rotate(45deg); margin-top: -6px; position: relative; z-index: -1; }
+.start-dot-wrap { margin-top: 4px; width: 12px; height: 12px; position: relative; }
+.start-dot-outer { position: absolute; inset: 0; background: #283873; }
+.start-dot-inner { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 4px; height: 4px; background: #fff; }
+.floating-area { position: absolute; bottom: 387px; left: 0; right: 0; padding: 0 10px 10px 10px; display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
+.fab-row { width: 100%; display: flex; justify-content: flex-end; }
+.fab-group { display: flex; flex-direction: column; gap: 12px; }
+.fab-btn { position: relative; width: 40px; height: 40px; border: none; background: none; padding: 0; cursor: pointer; }
+.fab-bg { position: absolute; inset: 5%; background: #fff; border-radius: 50%; box-shadow: 0px 2px 4px rgba(0,0,0,0.20), 0px 10px 30px rgba(0,0,0,0.20); }
+.fab-icon { position: absolute; inset: 20%; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.ph { width: 100%; height: 100%; background: #C8CDD8; border-radius: 2px; }
+.bottom-sheet { position: absolute; bottom: 0; left: 0; right: 0; background: #fff; border-radius: 12px 12px 0 0; box-shadow: 0px 10px 50px 10px rgba(0,0,0,0.10); overflow: hidden; display: flex; flex-direction: column; align-items: center; }
+.handle-wrap { width: 100%; padding: 10px; display: flex; justify-content: center; }
+.handle { width: 56px; height: 4px; background: rgba(153,165,192,0.20); border-radius: 2px; }
+.eta-section { width: 100%; background: #fff; padding: 20px 24px; display: flex; gap: 12px; align-items: flex-start; }
+.eta-text-group { flex: 1 0 0; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.eta-title { font-size: 20px; font-weight: 700; color: #262A38; line-height: 30px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.eta-sub { font-size: 14px; color: #73788B; line-height: 20px; }
+.route-btn { width: 71px; border: 1px solid #D5D7DC; border-radius: 6px; background: #fff; padding: 8px 10px; flex-shrink: 0; cursor: pointer; display: flex; gap: 4px; align-items: center; justify-content: center; font-family: inherit; }
+.route-btn span { font-size: 13px; font-weight: 700; color: #383D4F; line-height: 20px; white-space: nowrap; }
+.divider-wrap { width: 100%; padding: 0 24px; }
+.divider { height: 1px; background: #EFEFF1; }
+.driver-section { width: 100%; background: #fff; padding: 20px 24px; display: flex; flex-direction: column; overflow: hidden; }
+.driver-inner { width: 100%; display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+.driver-row { width: 100%; display: flex; align-items: center; }
+.driver-info-left { flex: 1 0 0; min-width: 0; display: flex; align-items: center; gap: 20px; }
+.driver-texts { flex: 1 0 0; min-width: 0; display: flex; flex-direction: column; }
+.plate { font-size: 18px; font-weight: 700; color: #32A2FA; line-height: 26px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.car-model { font-size: 14px; color: #4B5064; line-height: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.driver-name { font-size: 14px; line-height: 20px; color: #4B5064; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.driver-name b { font-weight: 700; }
+.phone-btn { padding: 12px; border-radius: 6px; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.phone-icon-wrap { position: relative; width: 24px; height: 24px; flex-shrink: 0; }
+.phone-icon-inner { position: absolute; top: 8.33%; bottom: 8.33%; left: 12.5%; right: 12.5%; background: #D5D7DC; border-radius: 2px; }
+.my-driver-btn { display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 0; background: none; border: none; cursor: pointer; font-family: inherit; }
+.my-driver-label { font-size: 14px; color: #262A38; line-height: 20px; white-space: nowrap; }
+.action-btns { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+.msg-btn { width: 100%; background: #F5F6F7; border-radius: 6px; border: none; padding: 14px 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: inherit; }
+.msg-btn-inner { flex: 1 0 0; display: flex; align-items: center; justify-content: center; gap: 4px; }
+.msg-icon-wrap { position: relative; width: 16px; height: 16px; flex-shrink: 0; }
+.msg-icon-inner { position: absolute; inset: 8.33%; background: #C8CDD8; border-radius: 2px; }
+.msg-btn-label { font-size: 14px; font-weight: 700; color: #383D4F; line-height: 20px; white-space: nowrap; }
+.solid-btn { width: 100%; background: #F5F6F7; border-radius: 6px; border: none; padding: 14px 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: inherit; }
+.solid-btn-label { flex: 1 0 0; font-size: 14px; font-weight: 700; color: #383D4F; line-height: 20px; text-align: center; }
+
+/* ═══════════════════════════════════════════════════
+   아바타 링 수치
+   - 아바타: 60×60px (반지름 30px)
+   - gap: 2px
+   - 선 두께: 2px
+   - SVG 크기: 68×68px (60 + (2+2)×2)
+   - SVG offset: -4px
+   - circle cx/cy: 34, r: 33 (gap 2 + 선 중심 1 = 3px 안쪽)
+   - 둘레: 2π×33 ≈ 207.3px
+   총 주기: 8s
+   - 0~65%: idle
+   - 65~75%: 선이 그려지며 등장 (draw-in)
+   - 75~88%: 완성된 링 유지
+   - 88~100%: fade out
+═══════════════════════════════════════════════════ */
+/*
+  .avatar-container: 링을 포함한 외부 컨테이너
+  크기: 60(아바타) + 2(gap)×2 + 2(링)×2 = 68px
+  링은 scale 없이 고정 위치
+*/
+.avatar-container {
+  position: relative;
+  width: 76px; height: 76px;
+  flex-shrink: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 링: SVG (그라데이션 지원) */
+.avatar-ring-svg {
+  position: absolute;
+  inset: 0;
+  width: 76px; height: 76px;
+  opacity: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+.avatar-container.playing .avatar-ring-svg {
+  animation: ringFade 2.4s ease 1 forwards;
+}
+/* 링 두께 애니메이션 (pulse 동기화) */
+.avatar-container.playing .ring-circle {
+  animation: ringStroke 2.4s linear 1 forwards;
+}
+
+@keyframes ringStroke {
+  /*
+    바깥으로만 커지도록: stroke-width 증가 시 r도 증가
+    안쪽 edge = r - stroke/2 = 32px 고정
+    stroke=2: r=33 / stroke=4: r=34
+  */
+  0%   { stroke-width: 2; r: 33; }
+  25%  { stroke-width: 4; r: 34; }
+  50%  { stroke-width: 2; r: 33; }
+  75%  { stroke-width: 4; r: 34; }
+  100% { stroke-width: 2; r: 33; }
+}
+
+
+@keyframes ringFade {
+  /*
+    총 2.4s, avatarPulse/ringStroke와 완전 동기화
+    0~8.3%   (0.2s): fade in   opacity 0→0.4  (등장)
+    8.3~25%  (0.4s): 대기      opacity 0.4    (1회차 down 시작 전)
+    25%             : 피크      opacity 1.0    (눌림 최대 = scale 최소)
+    25~50%   (0.6s): 복귀      opacity 1.0→0.4 (scale 올라오며 연해짐)
+    50~75%   (0.6s): 2회차 down opacity 0.4→1.0
+    75%             : 피크      opacity 1.0
+    75~91.7% (0.4s): 복귀      opacity 1.0→0.4
+    91.7~100%(0.2s): fade out  opacity 0.4→0  (퇴장)
+  */
+  0%     { opacity: 0; }
+  8.3%   { opacity: 0.4; }
+  25%    { opacity: 1.0; }
+  50%    { opacity: 0.4; }
+  75%    { opacity: 1.0; }
+  91.7%  { opacity: 0.4; }
+  100%   { opacity: 0; }
+}
+
+.avatar-wrapper {
+  position: relative;
+  width: 60px; height: 60px;
+  flex-shrink: 0;
+  /* pulse는 wrapper에만, 링은 container에 */
+}
+
+/* 아바타 본체 */
+.avatar {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  z-index: 2;
+  background: #C8D0DC;
+}
+
+/* 가상 인물 사진 */
+.avatar-photo {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  display: block;
+}
+
+/*
+  ── Pulse 애니메이션 ──
+  전체 주기: 6s
+  0~66.7%:   대기         (4s)
+  66.7~75%:  1회차 down   (1.0 → 0.92, 0.5s)
+  75~83.3%:  1회차 up     (0.92 → 1.0,  0.5s)
+  83.3~91.7%: 2회차 down  (1.0 → 0.92, 0.5s)
+  91.7~100%: 2회차 up     (0.92 → 1.0,  0.5s)
+*/
+
+@keyframes avatarPulse {
+  /*
+    총 3.6s, 대기 없이 바로 pulse 2회
+    1회 = 1.8s (down 0.9s + up 0.9s)
+  */
+  0%   { transform: scale(1);    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  25%  { transform: scale(0.90); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  50%  { transform: scale(1);    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  75%  { transform: scale(0.90); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  100% { transform: scale(1); }
+}
+
+/* SVG 링 공통: 68×68, -4px offset, z-index 3 */
+.ring-svg {
+  position: absolute;
+  top: -4px; left: -4px;
+  width: 68px; height: 68px;
+  z-index: 3;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* ── 그라데이션 링 circle ── */
+.ring-svg .circle-gradient {
+  fill: none;
+  stroke: url(#blueGradient);
+  stroke-width: 2;
+  stroke-linecap: round;
+  /* 12시 방향에서 시작: rotate -90deg (cx=34, cy=34 중심) */
+  transform: rotate(-90deg);
+  transform-origin: 34px 34px;
+  /* 둘레 ≈ 207.3 */
+  stroke-dasharray: 207.3;
+  stroke-dashoffset: 0;
+  opacity: 0;
+  opacity: 0; /* 링 비활성화 */
+}
+
+/* ── 단색 링 circle ── */
+.ring-svg .circle-solid {
+  fill: none;
+  stroke: #32A2FA;
+  stroke-width: 2;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 34px 34px;
+  stroke-dasharray: 207.3;
+  stroke-dashoffset: 0;
+  opacity: 0;
+  opacity: 0; /* 링 비활성화 */
+}
+
+/* ═══════════════════════════════
+   Keyframes — 총 8s
+   0~65%:  idle (5.2s)
+   65~75%: draw-in, 선이 그려짐 (0.8s)
+   75~88%: 완성 유지 (1.04s)
+   88~100%: fade out (0.96s)
+═══════════════════════════════ */
+
+@keyframes breathingGradient {
+  /*
+    총 10s 주기
+    0~50%:   idle (5s) — 완전히 없는 상태
+    50~65%:  fade in (1.5s) — 서서히 나타남
+    65~75%:  유지 (1s) — 피크
+    75~100%: fade out (2.5s) — 천천히 사라짐
+  */
+  0%   { opacity: 0; }
+  50%  { opacity: 0; }
+  65%  { opacity: 0.55; }
+  75%  { opacity: 0.55; }
+  100% { opacity: 0; }
+}
+
+@keyframes breathingSolid {
+  /*
+    동일 타이밍
+  */
+  0%   { opacity: 0; }
+  50%  { opacity: 0; }
+  65%  { opacity: 0.55; }
+  75%  { opacity: 0.55; }
+  100% { opacity: 0; }
+}
+
+/* ── display 전환 ── */
+.ring-svg { display: none; }
+.show-gradient .ring-svg.svg-gradient { display: block; }
+.show-solid    .ring-svg.svg-solid    { display: block; }
+
+/* profile styles */
+.screen-profile{width:393px;min-height:852px;background:#fff;border-radius:40px;box-shadow:0 20px 60px rgba(0,0,0,0.25);overflow:clip;display:flex;flex-direction:column;position:relative;}
+.p-appbar{position:absolute;top:0;left:0;right:0;height:92px;background:#fff;z-index:10;overflow:hidden;}
+.p-statusbar{height:36px;display:flex;align-items:center;padding:0 24px;position:relative;}
+.p-status-time{font-size:13px;color:rgba(0,0,0,0.7);letter-spacing:-0.2px;}
+.p-status-icons{position:absolute;right:22.87px;top:calc(50% + 1.5px);transform:translateY(-50%);width:25.549px;height:11.021px;background:#888;border-radius:2px;}
+.p-appbar-inner{position:absolute;top:36px;left:0;right:0;display:flex;align-items:center;gap:20px;padding:6px 8px;}
+.p-back-btn{padding:10px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.p-appbar-title{flex:1 0 0;font-size:18px;font-weight:400;color:#000;line-height:26px;}
+.p-appbar-sub{width:50px;height:44px;flex-shrink:0;}
+.p-content{padding-top:92px;padding-bottom:66px;display:flex;flex-direction:column;flex:1;}
+.p-main{background:#fff;padding:24px 20px;display:flex;flex-direction:column;gap:24px;width:100%;}
+.p-top{display:flex;align-items:center;width:100%;}
+.p-photo{width:72px;height:72px;border-radius:50%;object-fit:cover;display:block;flex-shrink:0;}
+.p-stats{flex:1 0 0;min-width:0;display:flex;align-items:center;justify-content:center;padding:0 12px;}
+.p-stat-item{flex:1 0 0;min-width:58px;max-width:120px;display:flex;flex-direction:column;align-items:center;}
+.p-stat-val{display:flex;gap:2px;align-items:center;justify-content:center;width:100%;}
+.p-stat-num{font-size:16px;font-weight:700;color:#262A38;line-height:24px;white-space:nowrap;}
+.p-stat-label{font-size:12px;font-weight:400;color:#73788B;line-height:18px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%;}
+.p-info{display:flex;flex-direction:column;gap:8px;width:100%;}
+.p-name{font-size:20px;font-weight:700;color:#262A38;line-height:30px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%;}
+.p-meta{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:400;color:#262A38;line-height:20px;width:100%;}
+.p-meta-link{display:flex;align-items:center;cursor:pointer;}
+.p-chevron{font-size:11px;color:#262A38;margin-left:2px;}
+.p-btns{display:flex;flex-direction:column;gap:8px;width:100%;}
+.p-btn-primary{width:100%;background:#19254D;border-radius:6px;border:none;padding:14px 18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;}
+.p-btn-primary span{flex:1 0 0;font-size:14px;font-weight:700;color:#fff;line-height:20px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.p-btn-row{display:flex;gap:8px;width:100%;}
+.p-btn-secondary{flex:1 0 0;min-width:0;background:#F5F6F7;border-radius:6px;border:none;padding:14px 18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;}
+.p-btn-secondary span{flex:1 0 0;font-size:14px;font-weight:700;color:#383D4F;line-height:20px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.p-tabs{background:#fff;border-bottom:1px solid #EFEFF1;display:flex;align-items:flex-start;width:100%;flex-shrink:0;}
+.p-tab-item{flex:1 0 0;min-width:0;height:48px;display:flex;flex-direction:column;align-items:center;}
+.p-tab-btn{width:100%;flex:1;display:flex;align-items:center;justify-content:center;padding:12px 8px 8px 8px;background:none;border:none;cursor:pointer;overflow:hidden;}
+.p-tab-label{flex:1 0 0;font-size:16px;line-height:24px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.p-tab-label.active{font-weight:700;color:#19254D;}
+.p-tab-label.inactive{font-weight:400;color:#60667A;}
+.p-tab-sel{height:4px;width:100%;flex-shrink:0;}
+.p-tab-sel.active{background:#19254D;}
+.p-tab-sel.inactive{background:transparent;}
+.p-summary{background:#fff;display:flex;flex-direction:column;overflow:hidden;width:100%;flex-shrink:0;}
+.p-summary-inner{display:flex;flex-direction:column;gap:8px;padding:32px 20px;}
+.p-summary-title{font-size:15px;font-weight:700;color:#262A38;line-height:22px;width:100%;}
+.p-summary-desc{font-size:14px;font-weight:400;color:#262A38;line-height:20px;width:100%;}
+
+/* ── 프로필 사진 확대 모달 ── */
+.photo-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transition: background 0.3s ease;
+}
+.photo-modal-overlay.active {
+  background: rgba(0,0,0,0.75);
+  pointer-events: auto;
+}
+.photo-modal-img {
+  border-radius: 50%;
+  object-fit: cover;
+  transform: scale(0.3);
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+  width: 373px;
+  height: 373px;
+  pointer-events: none;
+}
+.photo-modal-overlay.active .photo-modal-img {
+  transform: scale(1);
+  opacity: 1;
+  pointer-events: none;
+}
+
+
+/* protoContainer 레이아웃 */
+#protoContainer {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* ── 다시 시작 버튼 ── */
+.replay-btn {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(25, 37, 77, 0.85);
+  border: none;
+  border-radius: 100px;
+  padding: 8px 16px 8px 12px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+  transition: opacity 0.2s ease, transform 0.15s ease;
+  font-family: -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+}
+.replay-btn:active {
+  transform: translateX(-50%) scale(0.95);
+}
+.replay-btn svg {
+  flex-shrink: 0;
+}
+.replay-btn-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  line-height: 18px;
+}
+/* 버튼 눌렸을 때 잠깐 비활성화 */
+.replay-btn.playing {
+  opacity: 0.5;
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<div class="header">
+  <span class="header-logo">TADA</span>
+  <span class="header-sub">Driver Profile — Animation Dev Guide</span>
+</div>
+
+<!-- 메인 -->
+<div class="main">
+
+  <!-- 프로토타입 -->
+  <div class="prototype-panel">
+    <span class="panel-label">Prototype</span>
+    <!-- 프로토타입 iframe으로 임베드 -->
+    <div id="protoContainer"><div class="app">
+<div class="page page-main" id="pageMain">
+<!-- 라벨 -->
+<div class="label-wrap">
+  <span class="label-badge">shimmer</span>
+  <span class="label-desc">프로필 위로 흐르는 은은한 빛</span>
+</div>
+
+<div class="screen show-gradient" id="screen">
+  <div class="map-grid"></div>
+  <div class="statusbar">
+    <span class="status-time">12:45</span>
+    <div class="status-icons"></div>
+  </div>
+  <button class="home-btn">
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M8 17v-6h4v6h5v-8h3L10 1 0 9h3v8z" fill="#383D4F"/></svg>
+  </button>
+  <div class="car-marker">
+    <svg width="30" height="52" viewBox="0 0 30 52" fill="none">
+      <rect x="4" y="7" width="22" height="34" rx="6" fill="#D0D4DC"/>
+      <rect x="6" y="12" width="18" height="9" rx="2" fill="#B8C0CC" opacity="0.8"/>
+      <rect x="6" y="30" width="18" height="8" rx="2" fill="#B8C0CC" opacity="0.8"/>
+      <rect x="0" y="10" width="5" height="9" rx="2.5" fill="#9EA6B4"/>
+      <rect x="25" y="10" width="5" height="9" rx="2.5" fill="#9EA6B4"/>
+      <rect x="0" y="32" width="5" height="9" rx="2.5" fill="#9EA6B4"/>
+      <rect x="25" y="32" width="5" height="9" rx="2.5" fill="#9EA6B4"/>
+    </svg>
+  </div>
+  <div class="start-marker">
+    <div class="marker-bubble"><span class="marker-bubble-text">약 5분 후 차량 도착</span></div>
+    <div class="marker-arrow"></div>
+    <div class="start-dot-wrap"><div class="start-dot-outer"></div><div class="start-dot-inner"></div></div>
+  </div>
+  <div class="floating-area">
+    <div class="fab-row">
+      <div class="fab-group">
+        <button class="fab-btn"><div class="fab-bg"></div><div class="fab-icon"><div class="ph"></div></div></button>
+        <button class="fab-btn"><div class="fab-bg"></div><div class="fab-icon"><div class="ph"></div></div></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-sheet">
+    <div class="handle-wrap"><div class="handle"></div></div>
+    <div style="display:flex;flex-direction:column;align-items:flex-start;width:100%">
+
+      <div class="eta-section">
+        <div class="eta-text-group">
+          <div class="eta-title">약 5분 후 도착</div>
+          <div class="eta-sub">출발지로 이동 중</div>
+        </div>
+        <button class="route-btn"><span>경로 변경</span></button>
+      </div>
+
+      <div class="divider-wrap"><div class="divider"></div></div>
+
+      <div class="driver-section">
+        <div class="driver-inner">
+          <div class="driver-row">
+            <div class="driver-info-left">
+
+              <!-- 아바타 + 링 -->
+              <div class="avatar-container" id="avatarContainer" onclick="goToProfile()">
+              <!-- 단색 링: #5CB4FA, stroke-width 2→4 pulse 동기화 -->
+              <!--
+                바깥으로만 커지는 원리:
+                stroke는 r 중심에서 양쪽으로 퍼지므로
+                stroke-width가 커질 때 r도 같이 키워서 안쪽 edge 고정
+                안쪽 edge = r - stroke/2 = 32 (아바타 30 + gap 2) 고정
+                stroke=2: r=33 (33-1=32) / stroke=4: r=34 (34-2=32)
+              -->
+              <svg class="avatar-ring-svg" viewBox="0 0 76 76" xmlns="http://www.w3.org/2000/svg">
+                <circle
+                  class="ring-circle"
+                  cx="38" cy="38" r="33"
+                  fill="none"
+                  stroke="#B9DDFD"
+                  stroke-width="2"
+                />
+              </svg>
+              <div class="avatar-wrapper" id="avatarWrapper">
+
+                <!-- ① 그라데이션 링: breathing (opacity 0→0.55→0) -->
+                <svg class="ring-svg svg-gradient" viewBox="0 0 68 68" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="blueGradient" x1="1" y1="0" x2="0" y2="1">
+                      <stop offset="0%"   stop-color="#BAE0FD"/>
+                      <stop offset="40%"  stop-color="#7EC8FB"/>
+                      <stop offset="75%"  stop-color="#5AB0F7"/>
+                      <stop offset="100%" stop-color="#3A8FE8"/>
+                    </linearGradient>
+                  </defs>
+                  <circle class="circle-gradient" cx="34" cy="34" r="33"/>
+                </svg>
+
+                <!-- ② 단색 링: breathing (opacity 0→0.55→0) -->
+                <svg class="ring-svg svg-solid" viewBox="0 0 68 68" xmlns="http://www.w3.org/2000/svg">
+                  <circle class="circle-solid" cx="34" cy="34" r="33"/>
+                </svg>
+
+                <!-- 아바타 본체: 가상 인물 사진 + shimmer -->
+                <div class="avatar">
+                  <!-- 가상 인물 SVG -->
+                  <svg class="avatar-photo" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                    <image href="data:image/png;base64,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" x="0" y="0" width="60" height="60" preserveAspectRatio="xMidYMid slice"/>
+                  </svg>
+                </div>
+              </div><!-- /.avatar-wrapper -->
+              </div><!-- /.avatar-container -->
+
+              <div class="driver-texts">
+                <div class="plate">서울01가1234</div>
+                <div class="car-model">스타리아 ∙ 넥스트</div>
+                <div class="driver-name"><b>김재욱</b> 드라이버</div>
+              </div>
+            </div>
+            <button class="phone-btn">
+              <div class="phone-icon-wrap"><div class="phone-icon-inner"></div></div>
+            </button>
+          </div>
+
+          <button class="my-driver-btn">
+            <div style="position:relative;width:18px;height:18px;overflow:clip;flex-shrink:0">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <rect x="0.5" y="0.5" width="17" height="17" rx="3.5" fill="white" stroke="#D5D7DC"/>
+              </svg>
+            </div>
+            <span class="my-driver-label">마이 드라이버로 지정</span>
+          </button>
+
+          <div class="action-btns">
+            <div class="msg-btn" role="button">
+              <div class="msg-btn-inner">
+                <div class="msg-icon-wrap"><div class="msg-icon-inner"></div></div>
+                <span class="msg-btn-label">메시지 보내기</span>
+              </div>
+            </div>
+            <div class="solid-btn" role="button">
+              <span class="solid-btn-label">실증특례 지정차량</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <!-- 다시 시작 버튼: 메인 화면 하단 중앙 고정 -->
+  <button class="replay-btn" id="replayBtn" onclick="replayPulse()">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2.667 8A5.333 5.333 0 1 0 8 2.667V1.333L5.333 4 8 6.667V5.333A4 4 0 1 1 4 8" fill="white"/>
+    </svg>
+    <span class="replay-btn-label">애니메이션 다시 재생</span>
+  </button>
+</div>
+<div class="page page-profile" id="pageProfile">
+<div class="screen-profile">
+<div class="p-appbar">
+<div class="p-statusbar"><span class="p-status-time">12:45</span><div class="p-status-icons"></div></div>
+<div class="p-appbar-inner">
+<button class="p-back-btn" onclick="goBack()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15.5 19L8.5 12L15.5 5" stroke="#171A24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<span class="p-appbar-title">드라이버 프로필</span>
+<div class="p-appbar-sub"></div>
+</div>
+</div>
+<div class="p-content">
+<div class="p-main">
+<div class="p-top">
+<img class="p-photo" onclick="openPhotoModal(this)" style="cursor:pointer" src="data:image/png;base64,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" alt="드라이버"/>
+<div class="p-stats">
+<div class="p-stat-item"><div class="p-stat-val"><span class="p-stat-num">1회</span></div><span class="p-stat-label">함께한 운행</span></div>
+<div class="p-stat-item"><div class="p-stat-val"><span class="p-stat-num">만족</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#262A38" stroke-width="1.2"/><path d="M5 9.5C5 9.5 6 11 8 11C10 11 11 9.5 11 9.5" stroke="#262A38" stroke-width="1.2" stroke-linecap="round"/><circle cx="5.8" cy="7" r="0.9" fill="#262A38"/><circle cx="10.2" cy="7" r="0.9" fill="#262A38"/></svg></div><span class="p-stat-label">내 최근 평가</span></div>
+</div>
+</div>
+<div class="p-info">
+<p class="p-name">김재욱</p>
+<div class="p-meta">
+<div>넥스트 (스타리아, 카니발 등)</div>
+<div class="p-meta-link"><span>택시운전자격 인증됨</span><span class="p-chevron">›</span></div>
+<div class="p-meta-link"><span>마이 드라이버 이용 안내</span><span class="p-chevron">›</span></div>
+</div>
+</div>
+<div class="p-btns">
+<button class="p-btn-primary"><span>마이 드라이버로 지정</span></button>
+<div class="p-btn-row"><button class="p-btn-secondary"><span>공유하기</span></button><button class="p-btn-secondary"><span>예약하기</span></button></div>
+</div>
+</div>
+<div class="p-tabs">
+<div class="p-tab-item"><button class="p-tab-btn"><span class="p-tab-label active">요약</span></button><div class="p-tab-sel active"></div></div>
+<div class="p-tab-item"><button class="p-tab-btn"><span class="p-tab-label inactive">리뷰</span></button><div class="p-tab-sel inactive"></div></div>
+<div class="p-tab-item"><button class="p-tab-btn"><span class="p-tab-label inactive">추천</span></button><div class="p-tab-sel inactive"></div></div>
+</div>
+<div class="p-summary"><div class="p-summary-inner"><p class="p-summary-title">고객들의 평가</p><p class="p-summary-desc">안전하고 편안한 이동을 책임지는 드라이버입니다</p></div></div>
+</div>
+<!-- 프로필 사진 확대 모달: screen-profile 내부 absolute, dim이 목업 안에만 깔림 -->
+<div class="photo-modal-overlay" id="photoModal" onclick="closePhotoModal()">
+  <img class="photo-modal-img" id="photoModalImg" src="" alt="드라이버 프로필"/>
+</div>
+
+</div>
+</div>
+<script>
+
+function openPhotoModal(img) {
+  const modal = document.getElementById('photoModal');
+  const modalImg = document.getElementById('photoModalImg');
+  modalImg.src = img.src;
+  modal.classList.add('active');
+}
+function closePhotoModal() {
+  const modal = document.getElementById('photoModal');
+  modal.classList.remove('active');
+}
+
+/* ── Pulse: 매칭 완료 화면 진입 시 1회만 실행 ── */
+function replayPulse() {
+  const btn = document.getElementById('replayBtn');
+  if (!btn) return;
+  btn.classList.add('playing');
+  playAvatarPulse();
+  // 2s(애니메이션) + 여유 후 버튼 복구
+  setTimeout(() => btn.classList.remove('playing'), 2800);
+}
+
+function playAvatarPulse() {
+  const wrapper = document.getElementById('avatarWrapper');
+  const container = document.getElementById('avatarContainer');
+  if (!wrapper) return;
+
+  // 이미 재생 중이면 초기화
+  wrapper.style.animation = 'none';
+  container.classList.remove('playing');
+
+  // reflow: 두 요소 모두 리셋 확정
+  wrapper.offsetHeight;
+  container.offsetHeight;
+
+  // 링 + pulse를 rAF로 같은 프레임에서 동시 시작
+  requestAnimationFrame(() => {
+    container.classList.add('playing');
+    wrapper.style.animation = 'avatarPulse 2.4s linear 1 forwards';
+
+    wrapper.addEventListener('animationend', function onEnd() {
+      wrapper.style.animation = 'none';
+      container.classList.remove('playing');
+      wrapper.removeEventListener('animationend', onEnd);
+    });
+  });
+}
+
+/* 매칭 완료 화면 진입 시: pulse 실행 */
+function goToProfile() {
+  const main = document.getElementById('pageMain');
+  const profile = document.getElementById('pageProfile');
+  const app = document.querySelector('.app');
+  app.style.height = main.offsetHeight + 'px';
+  app.style.overflow = 'hidden';
+  main.classList.add('slide-out');
+  profile.classList.add('slide-in');
+  setTimeout(() => {
+    app.style.height = profile.offsetHeight + 'px';
+  }, 350);
+}
+
+/* goBack: pulse 없음 (포그라운드 복귀 개념과 동일) */
+function goBack() {
+  const main = document.getElementById('pageMain');
+  const profile = document.getElementById('pageProfile');
+  const app = document.querySelector('.app');
+  app.style.height = profile.offsetHeight + 'px';
+  main.classList.remove('slide-out');
+  profile.classList.remove('slide-in');
+  setTimeout(() => {
+    app.style.height = '';
+    app.style.overflow = '';
+  }, 350);
+}
+
+/* 페이지 최초 로드 = 매칭 완료 화면 첫 진입 → pulse 실행 */
+document.addEventListener('DOMContentLoaded', () => {
+  // 짧은 딜레이 후 실행 (화면 렌더 완료 후)
+  setTimeout(playAvatarPulse, 600);
+});
+</script>
+</div></div></iframe>
+  </div>
+
+  <!-- 콘솔 -->
+  <div class="console-panel">
+
+    <!-- 탭바 -->
+    <div class="console-tabs">
+      <button class="console-tab active" onclick="switchTab('guide')">개발 가이드</button>
+      <button class="console-tab" onclick="switchTab('ios')">
+        Swift / SwiftUI <span class="platform-badge badge-ios">iOS</span>
+      </button>
+      <button class="console-tab" onclick="switchTab('android')">
+        Compose <span class="platform-badge badge-android">Android</span>
+      </button>
+    </div>
+
+    <!-- ══════════════════════════════
+         탭 1: 개발 가이드
+    ══════════════════════════════ -->
+    <div class="console-content active" id="tab-guide">
+
+      <!-- 1. 개요 -->
+      <div class="guide-section">
+        <div class="section-title">Overview</div>
+        <p class="guide-desc">
+          드라이버 프로필 화면에는 두 가지 인터랙션이 구현되어 있습니다.<br>
+          <strong>① 바텀시트 프로필 사진 shimmer 애니메이션</strong> — 탭 가능함을 은은하게 넛지<br>
+          <strong>② 프로필 사진 탭 → 확대 뷰</strong> — 사진을 전체 너비로 확대하고 dim 처리
+        </p>
+        <div class="note-box">
+          <strong>재사용 컴포넌트 안내</strong><br>
+          이 shimmer는 앱 공통 <code>ShimmerBox</code>를 기반으로, <code>duration</code>과 <code>highlightOpacity</code>를 파라미터로 분리한 구조입니다.
+          아래 <strong>② Shimmer 비교 (공통 vs 넛지)</strong> 섹션에서 같은 점과 다른 점을 확인하세요.
+        </div>
+      </div>
+
+      <!-- 2. Shimmer 스펙 -->
+      <div class="guide-section">
+        <div class="section-title">① Shimmer Animation Spec</div>
+        <p class="guide-desc">프로필 사진 위에 투명한 흰색 그라데이션이 흐르며, 동시에 사진이 살짝 확대됩니다.</p>
+        <table class="spec-table">
+          <tr><th>속성</th><th>값</th><th>설명</th></tr>
+          <tr>
+            <td class="spec-key">baseColor</td>
+            <td class="spec-val">.clear</td>
+            <td class="spec-desc">투명 베이스 (사진 위 오버레이)</td>
+          </tr>
+          <tr>
+            <td class="spec-key">highlightColor</td>
+            <td class="spec-val">white.opacity(0.3)</td>
+            <td class="spec-desc">그라데이션 피크 색상</td>
+          </tr>
+          <tr>
+            <td class="spec-key">direction</td>
+            <td class="spec-val">leading → trailing</td>
+            <td class="spec-desc">좌 → 우 방향</td>
+          </tr>
+          <tr>
+            <td class="spec-key">duration</td>
+            <td class="spec-val">7.0s</td>
+            <td class="spec-desc">전체 주기 (대기 포함)</td>
+          </tr>
+          <tr>
+            <td class="spec-key">idleRatio</td>
+            <td class="spec-val">50% (3.5s)</td>
+            <td class="spec-desc">shimmer 없는 대기 구간</td>
+          </tr>
+          <tr>
+            <td class="spec-key">flowRatio</td>
+            <td class="spec-val">50% (3.5s)</td>
+            <td class="spec-desc">shimmer 흐르는 구간</td>
+          </tr>
+          <tr>
+            <td class="spec-key">easing</td>
+            <td class="spec-val">ease-in-out</td>
+            <td class="spec-desc">전체 커브</td>
+          </tr>
+          <tr>
+            <td class="spec-key">shimmerWidth</td>
+            <td class="spec-val">50%</td>
+            <td class="spec-desc">그라데이션 폭 (컨테이너 대비)</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- 3. Photo Scale 스펙 -->
+      <div class="guide-section">
+        <div class="section-title">① Photo Scale Spec (shimmer 동기화)</div>
+        <p class="guide-desc">shimmer와 동일한 주기로, 흐르는 구간 동안 사진이 1.0 → 1.1배로 확대됩니다.</p>
+        <table class="spec-table">
+          <tr><th>속성</th><th>값</th><th>설명</th></tr>
+          <tr>
+            <td class="spec-key">minScale</td>
+            <td class="spec-val">1.0</td>
+            <td class="spec-desc">기본 크기</td>
+          </tr>
+          <tr>
+            <td class="spec-key">maxScale</td>
+            <td class="spec-val">1.1</td>
+            <td class="spec-desc">최대 크기</td>
+          </tr>
+          <tr>
+            <td class="spec-key">peakTiming</td>
+            <td class="spec-val">72.5% (5.1s)</td>
+            <td class="spec-desc">shimmer 중간 지점에서 피크</td>
+          </tr>
+          <tr>
+            <td class="spec-key">scaleUpEasing</td>
+            <td class="spec-val">easeIn (완만하게 시작)</td>
+            <td class="spec-desc">시작점 완만 → 가속</td>
+          </tr>
+          <tr>
+            <td class="spec-key">scaleDownEasing</td>
+            <td class="spec-val">easeOut</td>
+            <td class="spec-desc">피크 후 부드럽게 복귀</td>
+          </tr>
+          <tr>
+            <td class="spec-key">clipShape</td>
+            <td class="spec-val">Circle</td>
+            <td class="spec-desc">원형 클리핑 유지 (overflow hidden)</td>
+          </tr>
+        </table>
+        <div class="note-box">
+          <strong>동기화 방법:</strong> shimmer와 photoScale 모두 동일한 duration(7s)으로 설정하고,
+          animation을 <code>.onAppear</code>에서 함께 시작하면 자동으로 동기화됩니다.
+        </div>
+      </div>
+
+      <!-- Shimmer 비교 섹션 -->
+      <div class="guide-section">
+        <div class="section-title">② Shimmer 비교 — 공통 ShimmerBox vs 이 화면</div>
+        <p class="guide-desc">
+          앱 공통 <code>ShimmerBox</code>는 로딩 스켈레톤용이고, 이 화면의 shimmer는 탭 가능함을 넛지하는 용도입니다.
+          목적이 다르기 때문에 일부 파라미터가 다르게 설정되어 있습니다.
+        </p>
+
+        <!-- 같은 점 -->
+        <div style="margin-bottom:16px">
+          <div style="font-size:11px;font-weight:700;color:#A8D880;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+            <span style="display:inline-block;width:8px;height:8px;background:#A8D880;border-radius:50%;flex-shrink:0;"></span>
+            같은 점
+          </div>
+          <table class="spec-table">
+            <tr><th>속성</th><th>공통 ShimmerBox</th><th>이 화면</th></tr>
+            <tr>
+              <td class="spec-key">direction</td>
+              <td class="spec-val">leading → trailing</td>
+              <td class="spec-val">leading → trailing</td>
+            </tr>
+            <tr>
+              <td class="spec-key">gradient colors</td>
+              <td class="spec-val">clear → white → clear</td>
+              <td class="spec-val">clear → white → clear</td>
+            </tr>
+            <tr>
+              <td class="spec-key">shimmerWidth</td>
+              <td class="spec-val">50% (startX ~ startX + 0.5)</td>
+              <td class="spec-val">50%</td>
+            </tr>
+            <tr>
+              <td class="spec-key">repeat</td>
+              <td class="spec-val">repeatForever / Restart</td>
+              <td class="spec-val">infinite</td>
+            </tr>
+            <tr>
+              <td class="spec-key">이동 방식</td>
+              <td class="spec-val">translateX (offset 이동)</td>
+              <td class="spec-val">translateX (동일)</td>
+            </tr>
+            <tr>
+              <td class="spec-key">baseColor</td>
+              <td class="spec-val">Color(0xFFE8EAED) — 단, 넛지용은 .clear</td>
+              <td class="spec-val">.clear (투명, 사진 위 오버레이)</td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- 다른 점 -->
+        <div>
+          <div style="font-size:11px;font-weight:700;color:#F38BA8;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+            <span style="display:inline-block;width:8px;height:8px;background:#F38BA8;border-radius:50%;flex-shrink:0;"></span>
+            다른 점
+          </div>
+          <table class="spec-table">
+            <tr><th>속성</th><th>공통 ShimmerBox</th><th>이 화면</th><th>이유</th></tr>
+            <tr>
+              <td class="spec-key">highlightOpacity</td>
+              <td class="spec-val">0.2</td>
+              <td class="spec-val">0.3</td>
+              <td class="spec-desc">넛지는 더 눈에 띄어야 함</td>
+            </tr>
+            <tr>
+              <td class="spec-key">duration</td>
+              <td class="spec-val">1.5s</td>
+              <td class="spec-val">7.0s</td>
+              <td class="spec-desc">스켈레톤은 빠르게, 넛지는 느리게</td>
+            </tr>
+            <tr>
+              <td class="spec-key">easing</td>
+              <td class="spec-val">linear</td>
+              <td class="spec-val">ease-in-out</td>
+              <td class="spec-desc">넛지는 부드럽게 나타났다 사라짐</td>
+            </tr>
+            <tr>
+              <td class="spec-key">idle 구간</td>
+              <td class="spec-val">없음 (쉬지 않고 반복)</td>
+              <td class="spec-val">50% (3.5s 대기 후 1회 실행)</td>
+              <td class="spec-desc">루프 피로감 방지, 가끔씩만 표시</td>
+            </tr>
+            <tr>
+              <td class="spec-key">opacity 제어</td>
+              <td class="spec-val">없음 (항상 표시)</td>
+              <td class="spec-val">fade in/out (0→1→0)</td>
+              <td class="spec-desc">은은하게 나타났다 사라지는 효과</td>
+            </tr>
+            <tr>
+              <td class="spec-key">photo scale</td>
+              <td class="spec-val">없음</td>
+              <td class="spec-val">1.0 → 1.1 동기화</td>
+              <td class="spec-desc">shimmer와 함께 사진이 살짝 확대</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="note-box" style="margin-top:16px;">
+          <strong>구현 가이드:</strong>
+          공통 <code>ShimmerBox(highlightOpacity:, duration:)</code>에 파라미터를 추가하고,
+          넛지용은 <code>idleRatio</code>, <code>fadeInOut</code> 파라미터를 별도로 주입하거나
+          <code>NudgeShimmer</code>라는 별도 래퍼 컴포넌트로 분리하는 것을 권장합니다.
+        </div>
+      </div>
+      <!-- 4. 확대 뷰 스펙 -->
+      <div class="guide-section">
+        <div class="section-title">② Profile Photo Expand Spec</div>
+        <p class="guide-desc">프로필 사진 탭 시 화면 내 dim 위에 사진이 확대됩니다. dim은 디바이스 목업 내부에만 적용됩니다.</p>
+        <table class="spec-table">
+          <tr><th>속성</th><th>값</th><th>설명</th></tr>
+          <tr>
+            <td class="spec-key">expandedSize</td>
+            <td class="spec-val">screenWidth - 20px</td>
+            <td class="spec-desc">좌우 10px 여백 유지</td>
+          </tr>
+          <tr>
+            <td class="spec-key">clipShape</td>
+            <td class="spec-val">Circle</td>
+            <td class="spec-desc">확대 후에도 원형 유지</td>
+          </tr>
+          <tr>
+            <td class="spec-key">dimColor</td>
+            <td class="spec-val">black.opacity(0.75)</td>
+            <td class="spec-desc">배경 dim 색상</td>
+          </tr>
+          <tr>
+            <td class="spec-key">dimScope</td>
+            <td class="spec-val">화면 내부 (ZStack 내)</td>
+            <td class="spec-desc">SafeArea 밖은 dim 미적용</td>
+          </tr>
+          <tr>
+            <td class="spec-key">appearAnimation</td>
+            <td class="spec-val">spring(0.3, 1.56, 0.64)</td>
+            <td class="spec-desc">scale 0.3 → 1.0, 살짝 튀는 커브</td>
+          </tr>
+          <tr>
+            <td class="spec-key">dismissTrigger</td>
+            <td class="spec-val">dim 탭</td>
+            <td class="spec-desc">사진 영역 외부 탭 시 닫힘</td>
+          </tr>
+          <tr>
+            <td class="spec-key">dismissAnimation</td>
+            <td class="spec-val">easeInOut (0.25s)</td>
+            <td class="spec-desc">닫힐 때 부드럽게</td>
+          </tr>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- ══════════════════════════════
+         탭 2: iOS Swift
+    ══════════════════════════════ -->
+    <div class="console-content" id="tab-ios">
+
+      <!-- Shimmer 컴포넌트 -->
+      <div class="guide-section">
+        <div class="section-title">ShimmerOverlay (재사용 컴포넌트)</div>
+        <p class="guide-desc">
+          앱 공통 <code>ShimmerBox</code>와 동일한 그라데이션 스펙을 사용합니다.
+          <strong>baseColor: .clear</strong>, <strong>highlightOpacity: 0.3</strong>, <strong>duration: 7.0</strong>으로 파라미터를 분리하세요.
+        </p>
+        <div class="code-block"><pre><span class="kw">struct</span> <span class="tp">ShimmerOverlay</span>: <span class="tp">View</span> {
+    <span class="cm">/// 그라데이션 피크 투명도 (공통 ShimmerBox: 0.2 / 넛지용: 0.3)</span>
+    <span class="kw">var</span> highlightOpacity: <span class="tp">Double</span> = <span class="nm">0.3</span>
+    <span class="cm">/// 전체 주기 초 (공통 ShimmerBox: 1.5 / 넛지용: 7.0)</span>
+    <span class="kw">var</span> duration: <span class="tp">Double</span> = <span class="nm">7.0</span>
+
+    <span class="kw">@State private var</span> phase: <span class="tp">CGFloat</span> = -<span class="nm">1</span>
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="tp">View</span> {
+        <span class="tp">GeometryReader</span> { geo <span class="kw">in</span>
+            <span class="tp">Color</span>.clear
+                .overlay(
+                    <span class="tp">LinearGradient</span>(
+                        colors: [
+                            .clear,
+                            <span class="tp">Color</span>.white.opacity(highlightOpacity),
+                            .clear
+                        ],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                    <span class="cm">// 폭: 컨테이너의 50%</span>
+                    .frame(width: geo.size.width * <span class="nm">0.5</span>)
+                    .offset(x: geo.size.width * phase)
+                )
+                .clipped()
+        }
+        .onAppear {
+            <span class="kw">withAnimation</span>(
+                .<span class="fn">easeInOut</span>(duration: duration)
+                .<span class="fn">repeatForever</span>(autoreverses: <span class="kw">false</span>)
+            ) {
+                <span class="cm">// 50% idle: 처음엔 화면 밖에서 대기</span>
+                <span class="tp">DispatchQueue</span>.main.<span class="fn">asyncAfter</span>(deadline: .now() + duration * <span class="nm">0.5</span>) {
+                    phase = <span class="nm">1.5</span> <span class="cm">// 화면 밖 오른쪽까지</span>
+                }
+            }
+        }
+    }
+}</pre></div>
+      </div>
+
+      <!-- 프로필 사진 shimmer + scale -->
+      <div class="guide-section">
+        <div class="section-title">① DriverAvatarView (shimmer + scale)</div>
+        <div class="code-block"><pre><span class="kw">struct</span> <span class="tp">DriverAvatarView</span>: <span class="tp">View</span> {
+    <span class="kw">let</span> image: <span class="tp">Image</span>
+    <span class="kw">let</span> size: <span class="tp">CGFloat</span> = <span class="nm">60</span>
+    <span class="kw">let</span> animDuration: <span class="tp">Double</span> = <span class="nm">7.0</span>
+
+    <span class="cm">// shimmer phase: -1(화면 밖 왼쪽) ~ 1.5(화면 밖 오른쪽)</span>
+    <span class="kw">@State private var</span> shimmerPhase: <span class="tp">CGFloat</span> = -<span class="nm">1</span>
+    <span class="cm">// scale: 1.0 ~ 1.1 (피크 72.5% 지점)</span>
+    <span class="kw">@State private var</span> scale: <span class="tp">CGFloat</span> = <span class="nm">1.0</span>
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="tp">View</span> {
+        image
+            .<span class="fn">resizable</span>()
+            .<span class="fn">scaledToFill</span>()
+            .<span class="fn">frame</span>(width: size, height: size)
+            .<span class="fn">clipShape</span>(<span class="tp">Circle</span>()) <span class="cm">// 원형 클리핑</span>
+            .<span class="fn">scaleEffect</span>(scale)
+            .overlay(
+                <span class="cm">// shimmer 오버레이</span>
+                <span class="tp">ShimmerOverlay</span>(
+                    highlightOpacity: <span class="nm">0.3</span>,
+                    duration: animDuration
+                )
+                .<span class="fn">clipShape</span>(<span class="tp">Circle</span>())
+            )
+            .<span class="fn">onAppear</span> { <span class="fn">startAnimation</span>() }
+    }
+
+    <span class="kw">private func</span> <span class="fn">startAnimation</span>() {
+        <span class="kw">let</span> idle = animDuration * <span class="nm">0.5</span>     <span class="cm">// 3.5s 대기</span>
+        <span class="kw">let</span> peak = animDuration * <span class="nm">0.725</span>    <span class="cm">// 5.075s 피크</span>
+        <span class="kw">let</span> total = animDuration            <span class="cm">// 7.0s 종료</span>
+
+        <span class="cm">// 대기 후 shimmer 시작</span>
+        <span class="tp">DispatchQueue</span>.main.<span class="fn">asyncAfter</span>(deadline: .now() + idle) {
+            <span class="cm">// scale up: easeIn (시작 완만)</span>
+            <span class="kw">withAnimation</span>(.<span class="fn">easeIn</span>(duration: peak - idle)) {
+                scale = <span class="nm">1.1</span>
+            }
+            <span class="cm">// scale down: 피크 이후 easeOut으로 복귀</span>
+            <span class="tp">DispatchQueue</span>.main.<span class="fn">asyncAfter</span>(deadline: .now() + (peak - idle)) {
+                <span class="kw">withAnimation</span>(.<span class="fn">easeOut</span>(duration: total - peak)) {
+                    scale = <span class="nm">1.0</span>
+                }
+            }
+        }
+    }
+}</pre></div>
+      </div>
+
+      <!-- 확대 뷰 -->
+      <div class="guide-section">
+        <div class="section-title">② ProfilePhotoExpandView</div>
+        <div class="code-block"><pre><span class="kw">struct</span> <span class="tp">DriverProfileView</span>: <span class="tp">View</span> {
+    <span class="kw">@State private var</span> showExpandedPhoto = <span class="kw">false</span>
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="tp">View</span> {
+        <span class="tp">ZStack</span> {
+            <span class="cm">// 기존 프로필 콘텐츠</span>
+            <span class="tp">ScrollView</span> {
+                <span class="tp">VStack</span> {
+                    <span class="tp">DriverAvatarView</span>(image: <span class="tp">Image</span>(<span class="st">"driver_photo"</span>))
+                        .<span class="fn">onTapGesture</span> {
+                            <span class="kw">withAnimation</span>(.<span class="fn">spring</span>(
+                                response: <span class="nm">0.35</span>,
+                                dampingFraction: <span class="nm">0.64</span>
+                            )) {
+                                showExpandedPhoto = <span class="kw">true</span>
+                            }
+                        }
+                }
+            }
+
+            <span class="cm">// 확대 뷰 (ZStack 위에 오버레이)</span>
+            <span class="kw">if</span> showExpandedPhoto {
+                <span class="cm">// Dim: 화면 내부에만 적용</span>
+                <span class="tp">Color</span>.black.opacity(<span class="nm">0.75</span>)
+                    .<span class="fn">ignoresSafeArea</span>(<span class="kw">false</span>) <span class="cm">// SafeArea 밖 dim 미적용</span>
+                    .<span class="fn">onTapGesture</span> {
+                        <span class="kw">withAnimation</span>(.<span class="fn">easeInOut</span>(duration: <span class="nm">0.25</span>)) {
+                            showExpandedPhoto = <span class="kw">false</span>
+                        }
+                    }
+
+                <span class="cm">// 확대 사진: screenWidth - 20pt (좌우 10pt 여백)</span>
+                <span class="kw">let</span> expandedSize = <span class="tp">UIScreen</span>.main.bounds.width - <span class="nm">20</span>
+                <span class="tp">Image</span>(<span class="st">"driver_photo"</span>)
+                    .<span class="fn">resizable</span>()
+                    .<span class="fn">scaledToFill</span>()
+                    .<span class="fn">frame</span>(width: expandedSize, height: expandedSize)
+                    .<span class="fn">clipShape</span>(<span class="tp">Circle</span>())
+                    .<span class="fn">transition</span>(.<span class="fn">scale</span>(scale: <span class="nm">0.3</span>).combined(with: .opacity))
+                    .<span class="fn">allowsHitTesting</span>(<span class="kw">false</span>)
+            }
+        }
+    }
+}</pre></div>
+      </div>
+
+    </div>
+
+    <!-- ══════════════════════════════
+         탭 3: Android Compose
+    ══════════════════════════════ -->
+    <div class="console-content" id="tab-android">
+
+      <!-- Shimmer 컴포넌트 -->
+      <div class="guide-section">
+        <div class="section-title">ShimmerOverlay (재사용 컴포넌트)</div>
+        <p class="guide-desc">
+          앱 공통 <code>ShimmerBox</code>와 그라데이션 스펙을 공유합니다.
+          <strong>highlightAlpha: 0.3f</strong>, <strong>durationMs: 7000</strong>을 파라미터로 주입하세요.
+        </p>
+        <div class="code-block"><pre><span class="cm">/**
+ * 공통 ShimmerBox와 동일한 그라데이션 스펙
+ * baseColor: Transparent (넛지용) / Color(0xFFE8EAED) (스켈레톤용)
+ * highlightAlpha: 0.3f (넛지용) / 0.2f (스켈레톤용)
+ * durationMs: 7000 (넛지용) / 1500 (스켈레톤용)
+ */</span>
+<span class="kw">@Composable</span>
+<span class="kw">fun</span> <span class="fn">ShimmerOverlay</span>(
+    modifier: <span class="tp">Modifier</span> = <span class="tp">Modifier</span>,
+    highlightAlpha: <span class="tp">Float</span> = <span class="nm">0.3f</span>,
+    durationMs: <span class="tp">Int</span> = <span class="nm">7000</span>
+) {
+    <span class="kw">val</span> infiniteTransition = <span class="fn">rememberInfiniteTransition</span>(label = <span class="st">"shimmer"</span>)
+
+    <span class="cm">// 0f ~ 1f 범위로 진행 (50% idle은 keyframe으로 처리)</span>
+    <span class="kw">val</span> progress <span class="kw">by</span> infiniteTransition.<span class="fn">animateFloat</span>(
+        initialValue = <span class="nm">0f</span>,
+        targetValue = <span class="nm">1f</span>,
+        animationSpec = <span class="fn">infiniteRepeatable</span>(
+            animation = <span class="fn">tween</span>(durationMs, easing = <span class="tp">LinearEasing</span>),
+            repeatMode = <span class="tp">RepeatMode</span>.Restart
+        ),
+        label = <span class="st">"shimmerProgress"</span>
+    )
+
+    <span class="cm">// 0~0.5: idle (shimmer 화면 밖) / 0.5~1.0: 흐름</span>
+    <span class="kw">val</span> shimmerOffset = <span class="kw">if</span> (progress < <span class="nm">0.5f</span>) -<span class="nm">1f</span>
+                        <span class="kw">else</span> (progress - <span class="nm">0.5f</span>) / <span class="nm">0.5f</span> * <span class="nm">2f</span> - <span class="nm">1f</span>
+
+    <span class="tp">Box</span>(
+        modifier = modifier.<span class="fn">drawWithContent</span> {
+            <span class="fn">drawContent</span>()
+            <span class="fn">drawRect</span>(
+                brush = <span class="tp">Brush</span>.<span class="fn">horizontalGradient</span>(
+                    colors = <span class="fn">listOf</span>(
+                        <span class="tp">Color</span>.Transparent,
+                        <span class="tp">Color</span>.White.<span class="fn">copy</span>(alpha = highlightAlpha),
+                        <span class="tp">Color</span>.Transparent
+                    ),
+                    <span class="cm">// 폭: 컨테이너의 50%</span>
+                    startX = size.width * shimmerOffset,
+                    endX = size.width * (shimmerOffset + <span class="nm">0.5f</span>)
+                )
+            )
+        }
+    )
+}</pre></div>
+      </div>
+
+      <!-- 프로필 사진 shimmer + scale -->
+      <div class="guide-section">
+        <div class="section-title">① DriverAvatarView (shimmer + scale)</div>
+        <div class="code-block"><pre><span class="kw">@Composable</span>
+<span class="kw">fun</span> <span class="fn">DriverAvatarView</span>(
+    painter: <span class="tp">Painter</span>,
+    size: <span class="tp">Dp</span> = <span class="nm">60</span>.dp,
+    onTap: () -> <span class="tp">Unit</span> = {}
+) {
+    <span class="kw">val</span> animDurationMs = <span class="nm">7000</span>
+    <span class="kw">val</span> infiniteTransition = <span class="fn">rememberInfiniteTransition</span>(label = <span class="st">"avatar"</span>)
+
+    <span class="cm">// scale 0→1 진행값</span>
+    <span class="kw">val</span> progress <span class="kw">by</span> infiniteTransition.<span class="fn">animateFloat</span>(
+        initialValue = <span class="nm">0f</span>,
+        targetValue = <span class="nm">1f</span>,
+        animationSpec = <span class="fn">infiniteRepeatable</span>(
+            animation = <span class="fn">tween</span>(animDurationMs, easing = <span class="tp">LinearEasing</span>),
+            repeatMode = <span class="tp">RepeatMode</span>.Restart
+        ),
+        label = <span class="st">"scaleProgress"</span>
+    )
+
+    <span class="cm">// scale 계산: idle 50%, 피크 72.5%, 종료 100%</span>
+    <span class="kw">val</span> scale = <span class="kw">when</span> {
+        progress < <span class="nm">0.5f</span>  -> <span class="nm">1.0f</span>  <span class="cm">// idle</span>
+        progress < <span class="nm">0.725f</span> -> {   <span class="cm">// scale up (easeIn)</span>
+            <span class="kw">val</span> t = (progress - <span class="nm">0.5f</span>) / <span class="nm">0.225f</span>
+            <span class="nm">1.0f</span> + (t * t) * <span class="nm">0.1f</span>   <span class="cm">// quadratic easeIn</span>
+        }
+        <span class="kw">else</span> -> {               <span class="cm">// scale down (easeOut)</span>
+            <span class="kw">val</span> t = (<span class="nm">1.0f</span> - progress) / (<span class="nm">1.0f</span> - <span class="nm">0.725f</span>)
+            <span class="nm">1.0f</span> + t * t * <span class="nm">0.1f</span>   <span class="cm">// quadratic easeOut</span>
+        }
+    }
+
+    <span class="tp">Box</span>(
+        modifier = <span class="tp">Modifier</span>
+            .<span class="fn">size</span>(size)
+            .<span class="fn">clip</span>(<span class="tp">CircleShape</span>)           <span class="cm">// 원형 클리핑</span>
+            .<span class="fn">graphicsLayer</span>(scaleX = scale, scaleY = scale)
+            .<span class="fn">clickable</span>(onClick = onTap)
+    ) {
+        <span class="tp">Image</span>(
+            painter = painter,
+            contentDescription = <span class="st">"드라이버 프로필"</span>,
+            contentScale = <span class="tp">ContentScale</span>.Crop,
+            modifier = <span class="tp">Modifier</span>.<span class="fn">fillMaxSize</span>()
+        )
+        <span class="cm">// shimmer 오버레이</span>
+        <span class="fn">ShimmerOverlay</span>(
+            modifier = <span class="tp">Modifier</span>.<span class="fn">fillMaxSize</span>(),
+            highlightAlpha = <span class="nm">0.3f</span>,
+            durationMs = animDurationMs
+        )
+    }
+}</pre></div>
+      </div>
+
+      <!-- 확대 뷰 -->
+      <div class="guide-section">
+        <div class="section-title">② ProfilePhotoExpandView</div>
+        <div class="code-block"><pre><span class="kw">@Composable</span>
+<span class="kw">fun</span> <span class="fn">DriverProfileScreen</span>(painter: <span class="tp">Painter</span>) {
+    <span class="kw">var</span> showExpanded <span class="kw">by</span> <span class="fn">remember</span> { <span class="fn">mutableStateOf</span>(<span class="kw">false</span>) }
+
+    <span class="cm">// 확대 애니메이션: scale 0.3 → 1.0, spring</span>
+    <span class="kw">val</span> expandScale <span class="kw">by</span> <span class="fn">animateFloatAsState</span>(
+        targetValue = <span class="kw">if</span> (showExpanded) <span class="nm">1.0f</span> <span class="kw">else</span> <span class="nm">0.3f</span>,
+        animationSpec = <span class="fn">spring</span>(
+            dampingRatio = <span class="nm">0.64f</span>,
+            stiffness = <span class="tp">Spring</span>.StiffnessMediumLow
+        ),
+        label = <span class="st">"expandScale"</span>
+    )
+    <span class="kw">val</span> dimAlpha <span class="kw">by</span> <span class="fn">animateFloatAsState</span>(
+        targetValue = <span class="kw">if</span> (showExpanded) <span class="nm">0.75f</span> <span class="kw">else</span> <span class="nm">0f</span>,
+        animationSpec = <span class="fn">tween</span>(<span class="nm">300</span>),
+        label = <span class="st">"dimAlpha"</span>
+    )
+
+    <span class="tp">Box</span>(modifier = <span class="tp">Modifier</span>.<span class="fn">fillMaxSize</span>()) {
+        <span class="cm">// 프로필 콘텐츠</span>
+        <span class="tp">Column</span> {
+            <span class="fn">DriverAvatarView</span>(
+                painter = painter,
+                onTap = { showExpanded = <span class="kw">true</span> }
+            )
+            <span class="cm">// ... 나머지 콘텐츠</span>
+        }
+
+        <span class="cm">// Dim + 확대 사진 (화면 내부 ZStack)</span>
+        <span class="kw">if</span> (showExpanded || expandScale > <span class="nm">0.01f</span>) {
+            <span class="cm">// Dim: Box 크기 내에서만 적용 (fillMaxSize = 화면 내부)</span>
+            <span class="tp">Box</span>(
+                modifier = <span class="tp">Modifier</span>
+                    .<span class="fn">fillMaxSize</span>()
+                    .<span class="fn">background</span>(<span class="tp">Color</span>.Black.<span class="fn">copy</span>(alpha = dimAlpha))
+                    .<span class="fn">clickable</span> {
+                        showExpanded = <span class="kw">false</span>
+                    },
+                contentAlignment = <span class="tp">Alignment</span>.Center
+            ) {
+                <span class="kw">val</span> screenWidth = <span class="tp">LocalConfiguration</span>.current.screenWidthDp.dp
+                <span class="kw">val</span> expandedSize = screenWidth - <span class="nm">20</span>.dp <span class="cm">// 좌우 10dp 여백</span>
+
+                <span class="tp">Image</span>(
+                    painter = painter,
+                    contentDescription = <span class="kw">null</span>,
+                    contentScale = <span class="tp">ContentScale</span>.Crop,
+                    modifier = <span class="tp">Modifier</span>
+                        .<span class="fn">size</span>(expandedSize)
+                        .<span class="fn">clip</span>(<span class="tp">CircleShape</span>)       <span class="cm">// 원형 유지</span>
+                        .<span class="fn">graphicsLayer</span>(
+                            scaleX = expandScale,
+                            scaleY = expandScale,
+                            alpha = expandScale.coerceAtMost(<span class="nm">1f</span>)
+                        )
+                        .<span class="fn">clickable</span>(<span class="fn">enabled</span> = <span class="kw">false</span>) {}
+                )
+            }
+        }
+    }
+}</pre></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(name) {
+  document.querySelectorAll('.console-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.console-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
+
+<script>
+/* ════ Guide JS ════ */
+
+function switchTab(name) {
+  document.querySelectorAll('.console-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.console-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+
+/* ════ App JS ════ */
+
+
+function openPhotoModal(img) {
+  const modal = document.getElementById('photoModal');
+  const modalImg = document.getElementById('photoModalImg');
+  modalImg.src = img.src;
+  modal.classList.add('active');
+}
+function closePhotoModal() {
+  const modal = document.getElementById('photoModal');
+  modal.classList.remove('active');
+}
+
+/* ── Pulse: 매칭 완료 화면 진입 시 1회만 실행 ── */
+function replayPulse() {
+  const btn = document.getElementById('replayBtn');
+  if (!btn) return;
+  btn.classList.add('playing');
+  playAvatarPulse();
+  // 2s(애니메이션) + 여유 후 버튼 복구
+  setTimeout(() => btn.classList.remove('playing'), 2800);
+}
+
+function playAvatarPulse() {
+  const wrapper = document.getElementById('avatarWrapper');
+  const container = document.getElementById('avatarContainer');
+  if (!wrapper) return;
+
+  // 이미 재생 중이면 초기화
+  wrapper.style.animation = 'none';
+  container.classList.remove('playing');
+
+  // reflow: 두 요소 모두 리셋 확정
+  wrapper.offsetHeight;
+  container.offsetHeight;
+
+  // 링 + pulse를 rAF로 같은 프레임에서 동시 시작
+  requestAnimationFrame(() => {
+    container.classList.add('playing');
+    wrapper.style.animation = 'avatarPulse 2.4s linear 1 forwards';
+
+    wrapper.addEventListener('animationend', function onEnd() {
+      wrapper.style.animation = 'none';
+      container.classList.remove('playing');
+      wrapper.removeEventListener('animationend', onEnd);
+    });
+  });
+}
+
+/* 매칭 완료 화면 진입 시: pulse 실행 */
+function goToProfile() {
+  const main = document.getElementById('pageMain');
+  const profile = document.getElementById('pageProfile');
+  const app = document.querySelector('.app');
+  app.style.height = main.offsetHeight + 'px';
+  app.style.overflow = 'hidden';
+  main.classList.add('slide-out');
+  profile.classList.add('slide-in');
+  setTimeout(() => {
+    app.style.height = profile.offsetHeight + 'px';
+  }, 350);
+}
+
+/* goBack: pulse 없음 (포그라운드 복귀 개념과 동일) */
+function goBack() {
+  const main = document.getElementById('pageMain');
+  const profile = document.getElementById('pageProfile');
+  const app = document.querySelector('.app');
+  app.style.height = profile.offsetHeight + 'px';
+  main.classList.remove('slide-out');
+  profile.classList.remove('slide-in');
+  setTimeout(() => {
+    app.style.height = '';
+    app.style.overflow = '';
+  }, 350);
+}
+
+/* 페이지 최초 로드 = 매칭 완료 화면 첫 진입 → pulse 실행 */
+document.addEventListener('DOMContentLoaded', () => {
+  // 짧은 딜레이 후 실행 (화면 렌더 완료 후)
+  setTimeout(playAvatarPulse, 600);
+});
+
+</script>
+
+</body>
+</html>
