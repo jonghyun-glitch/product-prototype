@@ -421,46 +421,53 @@ body {
   overflow: visible;
 }
 .avatar-container.playing .avatar-ring-svg {
-  animation: ringFade 2.4s ease 1 forwards;
+  animation: ringFade 3.6s ease 1 forwards;
 }
 /* 링 두께 애니메이션 (pulse 동기화) */
 .avatar-container.playing .ring-circle {
-  animation: ringStroke 2.4s linear 1 forwards;
+  animation: ringStroke 3.6s linear 1 forwards;
 }
 
 @keyframes ringStroke {
   /*
-    바깥으로만 커지도록: stroke-width 증가 시 r도 증가
+    pulse 3회와 동기화 (총 3.6s)
     안쪽 edge = r - stroke/2 = 32px 고정
     stroke=2: r=33 / stroke=4: r=34
   */
-  0%   { stroke-width: 2; r: 33; }
-  25%  { stroke-width: 4; r: 34; }
-  50%  { stroke-width: 2; r: 33; }
-  75%  { stroke-width: 4; r: 34; }
-  100% { stroke-width: 2; r: 33; }
+  0%      { stroke-width: 2; r: 33; }
+  16.67%  { stroke-width: 4; r: 34; }
+  33.33%  { stroke-width: 2; r: 33; }
+  50%     { stroke-width: 4; r: 34; }
+  66.67%  { stroke-width: 2; r: 33; }
+  83.33%  { stroke-width: 4; r: 34; }
+  100%    { stroke-width: 2; r: 33; }
 }
 
 
 @keyframes ringFade {
   /*
-    총 2.4s, avatarPulse/ringStroke와 완전 동기화
-    0~8.3%   (0.2s): fade in   opacity 0→0.4  (등장)
-    8.3~25%  (0.4s): 대기      opacity 0.4    (1회차 down 시작 전)
-    25%             : 피크      opacity 1.0    (눌림 최대 = scale 최소)
-    25~50%   (0.6s): 복귀      opacity 1.0→0.4 (scale 올라오며 연해짐)
-    50~75%   (0.6s): 2회차 down opacity 0.4→1.0
-    75%             : 피크      opacity 1.0
-    75~91.7% (0.4s): 복귀      opacity 1.0→0.4
-    91.7~100%(0.2s): fade out  opacity 0.4→0  (퇴장)
+    총 3.6s, pulse 3회와 동기화
+    0~5.6%     (0.2s): fade in    opacity 0→0.4
+    5.6~16.67% (0.4s): 1회차 down opacity 0.4→1.0
+    16.67%            : 1회차 피크 opacity 1.0
+    16.67~33.33%(0.6s): 1회차 up  opacity 1.0→0.4
+    33.33~50%  (0.6s): 2회차 down opacity 0.4→1.0
+    50%               : 2회차 피크 opacity 1.0
+    50~66.67%  (0.6s): 2회차 up   opacity 1.0→0.4
+    66.67~83.33%(0.6s): 3회차 down opacity 0.4→1.0
+    83.33%            : 3회차 피크 opacity 1.0
+    83.33~94.4%(0.4s): 3회차 up   opacity 1.0→0.4
+    94.4~100%  (0.2s): fade out   opacity 0.4→0
   */
-  0%     { opacity: 0; }
-  8.3%   { opacity: 0.4; }
-  25%    { opacity: 1.0; }
-  50%    { opacity: 0.4; }
-  75%    { opacity: 1.0; }
-  91.7%  { opacity: 0.4; }
-  100%   { opacity: 0; }
+  0%      { opacity: 0; }
+  5.6%    { opacity: 0.4; }
+  16.67%  { opacity: 1.0; }
+  33.33%  { opacity: 0.4; }
+  50%     { opacity: 1.0; }
+  66.67%  { opacity: 0.4; }
+  83.33%  { opacity: 1.0; }
+  94.4%   { opacity: 0.4; }
+  100%    { opacity: 0; }
 }
 
 .avatar-wrapper {
@@ -498,14 +505,16 @@ body {
 
 @keyframes avatarPulse {
   /*
-    총 3.6s, 대기 없이 바로 pulse 2회
-    1회 = 1.8s (down 0.9s + up 0.9s)
+    총 3.6s: pulse 3회
+    1회 = 1.2s (down 0.6s + up 0.6s)
   */
-  0%   { transform: scale(1);    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
-  25%  { transform: scale(0.90); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
-  50%  { transform: scale(1);    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
-  75%  { transform: scale(0.90); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
-  100% { transform: scale(1); }
+  0%      { transform: scale(1);    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  16.67%  { transform: scale(0.90); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  33.33%  { transform: scale(1);    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  50%     { transform: scale(0.90); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  66.67%  { transform: scale(1);    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  83.33%  { transform: scale(0.90); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  100%    { transform: scale(1); }
 }
 
 /* SVG 링 공통: 68×68, -4px offset, z-index 3 */
@@ -947,7 +956,7 @@ function replayPulse() {
   btn.classList.add('playing');
   playAvatarPulse();
   // 2s(애니메이션) + 여유 후 버튼 복구
-  setTimeout(() => btn.classList.remove('playing'), 2800);
+  setTimeout(() => btn.classList.remove('playing'), 4200);
 }
 
 function playAvatarPulse() {
@@ -966,7 +975,7 @@ function playAvatarPulse() {
   // 링 + pulse를 rAF로 같은 프레임에서 동시 시작
   requestAnimationFrame(() => {
     container.classList.add('playing');
-    wrapper.style.animation = 'avatarPulse 2.4s linear 1 forwards';
+    wrapper.style.animation = 'avatarPulse 3.6s linear 1 forwards';
 
     wrapper.addEventListener('animationend', function onEnd() {
       wrapper.style.animation = 'none';
@@ -1032,257 +1041,86 @@ document.addEventListener('DOMContentLoaded', () => {
     ══════════════════════════════ -->
     <div class="console-content active" id="tab-guide">
 
-      <!-- 1. 개요 -->
+      <!-- Overview -->
       <div class="guide-section">
         <div class="section-title">Overview</div>
         <p class="guide-desc">
-          드라이버 프로필 화면에는 두 가지 인터랙션이 구현되어 있습니다.<br>
-          <strong>① 바텀시트 프로필 사진 shimmer 애니메이션</strong> — 탭 가능함을 은은하게 넛지<br>
-          <strong>② 프로필 사진 탭 → 확대 뷰</strong> — 사진을 전체 너비로 확대하고 dim 처리
+          매칭 완료 화면 진입 시 드라이버 프로필 사진이 Pulse 애니메이션과 함께 테두리 링이 나타납니다.<br>
+          <strong>① Pulse + Ring</strong> — 진입 시 1회 실행. 사진이 줄어드는 동작에 맞춰 링 두께와 opacity가 함께 반응<br>
+          <strong>② 프로필 사진 확대 뷰</strong> — 탭 시 화면 내 dim + 원형 확대
         </p>
         <div class="note-box">
-          <strong>재사용 컴포넌트 안내</strong><br>
-          이 shimmer는 앱 공통 <code>ShimmerBox</code>를 기반으로, <code>duration</code>과 <code>highlightOpacity</code>를 파라미터로 분리한 구조입니다.
-          아래 <strong>② Shimmer 비교 (공통 vs 넛지)</strong> 섹션에서 같은 점과 다른 점을 확인하세요.
+          <strong>실행 조건</strong><br>
+          매칭 완료 화면 최초 진입 시에만 실행합니다. 백그라운드 → 포그라운드 복귀 시에는 실행하지 않습니다.<br>
+          실제 앱에서는 <code>매칭 API 응답 콜백</code> 시점에 트리거하세요.
         </div>
       </div>
 
-      <!-- 2. Shimmer 스펙 -->
+      <!-- 전체 타이밍 -->
       <div class="guide-section">
-        <div class="section-title">① Shimmer Animation Spec</div>
-        <p class="guide-desc">프로필 사진 위에 투명한 흰색 그라데이션이 흐르며, 동시에 사진이 살짝 확대됩니다.</p>
+        <div class="section-title">① Pulse + Ring 전체 타이밍 (duration: 2.4s)</div>
+        <p class="guide-desc">scale이 줄어들 때(눌림) 링이 두꺼워지고 선명해집니다. scale이 커질 때(복귀) 링이 얇아지고 연해집니다.</p>
         <table class="spec-table">
-          <tr><th>속성</th><th>값</th><th>설명</th></tr>
-          <tr>
-            <td class="spec-key">baseColor</td>
-            <td class="spec-val">.clear</td>
-            <td class="spec-desc">투명 베이스 (사진 위 오버레이)</td>
-          </tr>
-          <tr>
-            <td class="spec-key">highlightColor</td>
-            <td class="spec-val">white.opacity(0.3)</td>
-            <td class="spec-desc">그라데이션 피크 색상</td>
-          </tr>
-          <tr>
-            <td class="spec-key">direction</td>
-            <td class="spec-val">leading → trailing</td>
-            <td class="spec-desc">좌 → 우 방향</td>
-          </tr>
-          <tr>
-            <td class="spec-key">duration</td>
-            <td class="spec-val">7.0s</td>
-            <td class="spec-desc">전체 주기 (대기 포함)</td>
-          </tr>
-          <tr>
-            <td class="spec-key">idleRatio</td>
-            <td class="spec-val">50% (3.5s)</td>
-            <td class="spec-desc">shimmer 없는 대기 구간</td>
-          </tr>
-          <tr>
-            <td class="spec-key">flowRatio</td>
-            <td class="spec-val">50% (3.5s)</td>
-            <td class="spec-desc">shimmer 흐르는 구간</td>
-          </tr>
-          <tr>
-            <td class="spec-key">easing</td>
-            <td class="spec-val">ease-in-out</td>
-            <td class="spec-desc">전체 커브</td>
-          </tr>
-          <tr>
-            <td class="spec-key">shimmerWidth</td>
-            <td class="spec-val">50%</td>
-            <td class="spec-desc">그라데이션 폭 (컨테이너 대비)</td>
-          </tr>
+          <tr><th>구간</th><th>시간</th><th>scale</th><th>stroke-width</th><th>opacity</th></tr>
+          <tr><td class="spec-key">0 ~ 8.3%</td><td class="spec-val">0.2s</td><td class="spec-val">1.0</td><td class="spec-val">2px</td><td class="spec-val">0 → 0.4 (fade in)</td></tr>
+          <tr><td class="spec-key">8.3 ~ 25%</td><td class="spec-val">0.4s</td><td class="spec-val">1.0 → 0.90</td><td class="spec-val">2 → 4px</td><td class="spec-val">0.4 → 1.0</td></tr>
+          <tr><td class="spec-key">25% (피크)</td><td class="spec-val">—</td><td class="spec-val">0.90</td><td class="spec-val">4px</td><td class="spec-val">1.0</td></tr>
+          <tr><td class="spec-key">25 ~ 50%</td><td class="spec-val">0.6s</td><td class="spec-val">0.90 → 1.0</td><td class="spec-val">4 → 2px</td><td class="spec-val">1.0 → 0.4</td></tr>
+          <tr><td class="spec-key">50 ~ 75%</td><td class="spec-val">0.6s</td><td class="spec-val">1.0 → 0.90</td><td class="spec-val">2 → 4px</td><td class="spec-val">0.4 → 1.0</td></tr>
+          <tr><td class="spec-key">75% (피크)</td><td class="spec-val">—</td><td class="spec-val">0.90</td><td class="spec-val">4px</td><td class="spec-val">1.0</td></tr>
+          <tr><td class="spec-key">75 ~ 91.7%</td><td class="spec-val">0.4s</td><td class="spec-val">0.90 → 1.0</td><td class="spec-val">4 → 2px</td><td class="spec-val">1.0 → 0.4</td></tr>
+          <tr><td class="spec-key">91.7 ~ 100%</td><td class="spec-val">0.2s</td><td class="spec-val">1.0</td><td class="spec-val">2px</td><td class="spec-val">0.4 → 0 (fade out)</td></tr>
         </table>
       </div>
 
-      <!-- 3. Photo Scale 스펙 -->
+      <!-- Pulse 스펙 -->
       <div class="guide-section">
-        <div class="section-title">① Photo Scale Spec (shimmer 동기화)</div>
-        <p class="guide-desc">shimmer와 동일한 주기로, 흐르는 구간 동안 사진이 1.0 → 1.1배로 확대됩니다.</p>
+        <div class="section-title">① Pulse 스펙</div>
         <table class="spec-table">
           <tr><th>속성</th><th>값</th><th>설명</th></tr>
-          <tr>
-            <td class="spec-key">minScale</td>
-            <td class="spec-val">1.0</td>
-            <td class="spec-desc">기본 크기</td>
-          </tr>
-          <tr>
-            <td class="spec-key">maxScale</td>
-            <td class="spec-val">1.1</td>
-            <td class="spec-desc">최대 크기</td>
-          </tr>
-          <tr>
-            <td class="spec-key">peakTiming</td>
-            <td class="spec-val">72.5% (5.1s)</td>
-            <td class="spec-desc">shimmer 중간 지점에서 피크</td>
-          </tr>
-          <tr>
-            <td class="spec-key">scaleUpEasing</td>
-            <td class="spec-val">easeIn (완만하게 시작)</td>
-            <td class="spec-desc">시작점 완만 → 가속</td>
-          </tr>
-          <tr>
-            <td class="spec-key">scaleDownEasing</td>
-            <td class="spec-val">easeOut</td>
-            <td class="spec-desc">피크 후 부드럽게 복귀</td>
-          </tr>
-          <tr>
-            <td class="spec-key">clipShape</td>
-            <td class="spec-val">Circle</td>
-            <td class="spec-desc">원형 클리핑 유지 (overflow hidden)</td>
-          </tr>
+          <tr><td class="spec-key">minScale</td><td class="spec-val">1.0</td><td class="spec-desc">기본 크기</td></tr>
+          <tr><td class="spec-key">maxScale (피크)</td><td class="spec-val">0.90</td><td class="spec-desc">눌림 최대</td></tr>
+          <tr><td class="spec-key">duration</td><td class="spec-val">2.4s</td><td class="spec-desc">총 1회 실행</td></tr>
+          <tr><td class="spec-key">repeatCount</td><td class="spec-val">1회 실행 (pulse 3회 반복)</td><td class="spec-desc">진입 시 단 1회 실행, pulse는 3회 반복</td></tr>
+          <tr><td class="spec-key">easing</td><td class="spec-val">cubic-bezier(0.45, 0, 0.55, 1)</td><td class="spec-desc">시작/끝 완만, 중간 가속</td></tr>
+          <tr><td class="spec-key">clipShape</td><td class="spec-val">Circle</td><td class="spec-desc">원형 클리핑 유지</td></tr>
         </table>
-        <div class="note-box">
-          <strong>동기화 방법:</strong> shimmer와 photoScale 모두 동일한 duration(7s)으로 설정하고,
-          animation을 <code>.onAppear</code>에서 함께 시작하면 자동으로 동기화됩니다.
-        </div>
       </div>
 
-      <!-- Shimmer 비교 섹션 -->
+      <!-- Ring 스펙 -->
       <div class="guide-section">
-        <div class="section-title">② Shimmer 비교 — 공통 ShimmerBox vs 이 화면</div>
-        <p class="guide-desc">
-          앱 공통 <code>ShimmerBox</code>는 로딩 스켈레톤용이고, 이 화면의 shimmer는 탭 가능함을 넛지하는 용도입니다.
-          목적이 다르기 때문에 일부 파라미터가 다르게 설정되어 있습니다.
-        </p>
-
-        <!-- 같은 점 -->
-        <div style="margin-bottom:16px">
-          <div style="font-size:11px;font-weight:700;color:#A8D880;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-            <span style="display:inline-block;width:8px;height:8px;background:#A8D880;border-radius:50%;flex-shrink:0;"></span>
-            같은 점
-          </div>
-          <table class="spec-table">
-            <tr><th>속성</th><th>공통 ShimmerBox</th><th>이 화면</th></tr>
-            <tr>
-              <td class="spec-key">direction</td>
-              <td class="spec-val">leading → trailing</td>
-              <td class="spec-val">leading → trailing</td>
-            </tr>
-            <tr>
-              <td class="spec-key">gradient colors</td>
-              <td class="spec-val">clear → white → clear</td>
-              <td class="spec-val">clear → white → clear</td>
-            </tr>
-            <tr>
-              <td class="spec-key">shimmerWidth</td>
-              <td class="spec-val">50% (startX ~ startX + 0.5)</td>
-              <td class="spec-val">50%</td>
-            </tr>
-            <tr>
-              <td class="spec-key">repeat</td>
-              <td class="spec-val">repeatForever / Restart</td>
-              <td class="spec-val">infinite</td>
-            </tr>
-            <tr>
-              <td class="spec-key">이동 방식</td>
-              <td class="spec-val">translateX (offset 이동)</td>
-              <td class="spec-val">translateX (동일)</td>
-            </tr>
-            <tr>
-              <td class="spec-key">baseColor</td>
-              <td class="spec-val">Color(0xFFE8EAED) — 단, 넛지용은 .clear</td>
-              <td class="spec-val">.clear (투명, 사진 위 오버레이)</td>
-            </tr>
-          </table>
-        </div>
-
-        <!-- 다른 점 -->
-        <div>
-          <div style="font-size:11px;font-weight:700;color:#F38BA8;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-            <span style="display:inline-block;width:8px;height:8px;background:#F38BA8;border-radius:50%;flex-shrink:0;"></span>
-            다른 점
-          </div>
-          <table class="spec-table">
-            <tr><th>속성</th><th>공통 ShimmerBox</th><th>이 화면</th><th>이유</th></tr>
-            <tr>
-              <td class="spec-key">highlightOpacity</td>
-              <td class="spec-val">0.2</td>
-              <td class="spec-val">0.3</td>
-              <td class="spec-desc">넛지는 더 눈에 띄어야 함</td>
-            </tr>
-            <tr>
-              <td class="spec-key">duration</td>
-              <td class="spec-val">1.5s</td>
-              <td class="spec-val">7.0s</td>
-              <td class="spec-desc">스켈레톤은 빠르게, 넛지는 느리게</td>
-            </tr>
-            <tr>
-              <td class="spec-key">easing</td>
-              <td class="spec-val">linear</td>
-              <td class="spec-val">ease-in-out</td>
-              <td class="spec-desc">넛지는 부드럽게 나타났다 사라짐</td>
-            </tr>
-            <tr>
-              <td class="spec-key">idle 구간</td>
-              <td class="spec-val">없음 (쉬지 않고 반복)</td>
-              <td class="spec-val">50% (3.5s 대기 후 1회 실행)</td>
-              <td class="spec-desc">루프 피로감 방지, 가끔씩만 표시</td>
-            </tr>
-            <tr>
-              <td class="spec-key">opacity 제어</td>
-              <td class="spec-val">없음 (항상 표시)</td>
-              <td class="spec-val">fade in/out (0→1→0)</td>
-              <td class="spec-desc">은은하게 나타났다 사라지는 효과</td>
-            </tr>
-            <tr>
-              <td class="spec-key">photo scale</td>
-              <td class="spec-val">없음</td>
-              <td class="spec-val">1.0 → 1.1 동기화</td>
-              <td class="spec-desc">shimmer와 함께 사진이 살짝 확대</td>
-            </tr>
-          </table>
-        </div>
-
-        <div class="note-box" style="margin-top:16px;">
-          <strong>구현 가이드:</strong>
-          공통 <code>ShimmerBox(highlightOpacity:, duration:)</code>에 파라미터를 추가하고,
-          넛지용은 <code>idleRatio</code>, <code>fadeInOut</code> 파라미터를 별도로 주입하거나
-          <code>NudgeShimmer</code>라는 별도 래퍼 컴포넌트로 분리하는 것을 권장합니다.
-        </div>
-      </div>
-      <!-- 4. 확대 뷰 스펙 -->
-      <div class="guide-section">
-        <div class="section-title">② Profile Photo Expand Spec</div>
-        <p class="guide-desc">프로필 사진 탭 시 화면 내 dim 위에 사진이 확대됩니다. dim은 디바이스 목업 내부에만 적용됩니다.</p>
+        <div class="section-title">① Ring 스펙</div>
         <table class="spec-table">
           <tr><th>속성</th><th>값</th><th>설명</th></tr>
-          <tr>
-            <td class="spec-key">expandedSize</td>
-            <td class="spec-val">screenWidth - 20px</td>
-            <td class="spec-desc">좌우 10px 여백 유지</td>
-          </tr>
-          <tr>
-            <td class="spec-key">clipShape</td>
-            <td class="spec-val">Circle</td>
-            <td class="spec-desc">확대 후에도 원형 유지</td>
-          </tr>
-          <tr>
-            <td class="spec-key">dimColor</td>
-            <td class="spec-val">black.opacity(0.75)</td>
-            <td class="spec-desc">배경 dim 색상</td>
-          </tr>
-          <tr>
-            <td class="spec-key">dimScope</td>
-            <td class="spec-val">화면 내부 (ZStack 내)</td>
-            <td class="spec-desc">SafeArea 밖은 dim 미적용</td>
-          </tr>
-          <tr>
-            <td class="spec-key">appearAnimation</td>
-            <td class="spec-val">spring(0.3, 1.56, 0.64)</td>
-            <td class="spec-desc">scale 0.3 → 1.0, 살짝 튀는 커브</td>
-          </tr>
-          <tr>
-            <td class="spec-key">dismissTrigger</td>
-            <td class="spec-val">dim 탭</td>
-            <td class="spec-desc">사진 영역 외부 탭 시 닫힘</td>
-          </tr>
-          <tr>
-            <td class="spec-key">dismissAnimation</td>
-            <td class="spec-val">easeInOut (0.25s)</td>
-            <td class="spec-desc">닫힐 때 부드럽게</td>
-          </tr>
+          <tr><td class="spec-key">color</td><td class="spec-val">#B9DDFD</td><td class="spec-desc">타다 블루 연한 톤</td></tr>
+          <tr><td class="spec-key">minStrokeWidth</td><td class="spec-val">2px</td><td class="spec-desc">기본 두께</td></tr>
+          <tr><td class="spec-key">maxStrokeWidth</td><td class="spec-val">4px</td><td class="spec-desc">눌림 피크 시 두께</td></tr>
+          <tr><td class="spec-key">gap</td><td class="spec-val">2px</td><td class="spec-desc">아바타와 링 사이 빈 공간 (고정)</td></tr>
+          <tr><td class="spec-key">expandDirection</td><td class="spec-val">바깥 방향만</td><td class="spec-desc">안쪽 edge 고정, 바깥으로만 확장</td></tr>
+          <tr><td class="spec-key">minOpacity</td><td class="spec-val">0.4</td><td class="spec-desc">기본 opacity</td></tr>
+          <tr><td class="spec-key">maxOpacity</td><td class="spec-val">1.0</td><td class="spec-desc">눌림 피크 시 opacity</td></tr>
+          <tr><td class="spec-key">scaleEffect</td><td class="spec-val">없음</td><td class="spec-desc">링은 scale 애니메이션과 완전 독립</td></tr>
+          <tr><td class="spec-key">container</td><td class="spec-val">76×76px</td><td class="spec-desc">60(아바타) + 2×2(gap) + 4×2(stroke) = 76</td></tr>
+        </table>
+        <div class="note-box" style="margin-top:12px">
+          <strong>바깥으로만 확장되는 원리 (SVG 기준)</strong><br>
+          안쪽 edge = r - strokeWidth/2 = 32px 고정 (아바타 반지름 30 + gap 2)<br>
+          strokeWidth=2 → r=33 / strokeWidth=4 → r=34
+        </div>
+      </div>
+
+      <!-- 확대 뷰 스펙 -->
+      <div class="guide-section">
+        <div class="section-title">② 확대 뷰 스펙</div>
+        <table class="spec-table">
+          <tr><th>속성</th><th>값</th><th>설명</th></tr>
+          <tr><td class="spec-key">expandedSize</td><td class="spec-val">screenWidth - 20pt/dp</td><td class="spec-desc">좌우 각 10pt/dp 여백</td></tr>
+          <tr><td class="spec-key">clipShape</td><td class="spec-val">Circle</td><td class="spec-desc">확대 후에도 원형 유지</td></tr>
+          <tr><td class="spec-key">dimColor</td><td class="spec-val">black.opacity(0.75)</td><td class="spec-desc">배경 dim</td></tr>
+          <tr><td class="spec-key">dimScope</td><td class="spec-val">화면 내부</td><td class="spec-desc">SafeArea 밖 dim 미적용</td></tr>
+          <tr><td class="spec-key">appearEasing</td><td class="spec-val">spring(damping: 0.64)</td><td class="spec-desc">scale 0.3 → 1.0</td></tr>
+          <tr><td class="spec-key">dismissTrigger</td><td class="spec-val">dim 탭</td><td class="spec-desc">사진 외부 탭 시 닫힘</td></tr>
+          <tr><td class="spec-key">dismissDuration</td><td class="spec-val">0.25s easeInOut</td><td class="spec-desc">닫힘 애니메이션</td></tr>
         </table>
       </div>
 
@@ -1293,151 +1131,138 @@ document.addEventListener('DOMContentLoaded', () => {
     ══════════════════════════════ -->
     <div class="console-content" id="tab-ios">
 
-      <!-- Shimmer 컴포넌트 -->
       <div class="guide-section">
-        <div class="section-title">ShimmerOverlay (재사용 컴포넌트)</div>
+        <div class="section-title">DriverAvatarRingView (Pulse + Ring 통합)</div>
         <p class="guide-desc">
-          앱 공통 <code>ShimmerBox</code>와 동일한 그라데이션 스펙을 사용합니다.
-          <strong>baseColor: .clear</strong>, <strong>highlightOpacity: 0.3</strong>, <strong>duration: 7.0</strong>으로 파라미터를 분리하세요.
+          Pulse와 Ring을 하나의 컴포넌트로 통합합니다. 링은 ZStack 고정 크기 기준으로 scale과 완전히 독립됩니다.<br>
+          <strong>Task + await</strong> 패턴 사용 (iOS 16+, Swift 5.9 이상 권장 / WWDC 2025 기준 현행)
         </p>
-        <div class="code-block"><pre><span class="kw">struct</span> <span class="tp">ShimmerOverlay</span>: <span class="tp">View</span> {
-    <span class="cm">/// 그라데이션 피크 투명도 (공통 ShimmerBox: 0.2 / 넛지용: 0.3)</span>
-    <span class="kw">var</span> highlightOpacity: <span class="tp">Double</span> = <span class="nm">0.3</span>
-    <span class="cm">/// 전체 주기 초 (공통 ShimmerBox: 1.5 / 넛지용: 7.0)</span>
-    <span class="kw">var</span> duration: <span class="tp">Double</span> = <span class="nm">7.0</span>
-
-    <span class="kw">@State private var</span> phase: <span class="tp">CGFloat</span> = -<span class="nm">1</span>
-
-    <span class="kw">var</span> body: <span class="kw">some</span> <span class="tp">View</span> {
-        <span class="tp">GeometryReader</span> { geo <span class="kw">in</span>
-            <span class="tp">Color</span>.clear
-                .overlay(
-                    <span class="tp">LinearGradient</span>(
-                        colors: [
-                            .clear,
-                            <span class="tp">Color</span>.white.opacity(highlightOpacity),
-                            .clear
-                        ],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                    <span class="cm">// 폭: 컨테이너의 50%</span>
-                    .frame(width: geo.size.width * <span class="nm">0.5</span>)
-                    .offset(x: geo.size.width * phase)
-                )
-                .clipped()
-        }
-        .onAppear {
-            <span class="kw">withAnimation</span>(
-                .<span class="fn">easeInOut</span>(duration: duration)
-                .<span class="fn">repeatForever</span>(autoreverses: <span class="kw">false</span>)
-            ) {
-                <span class="cm">// 50% idle: 처음엔 화면 밖에서 대기</span>
-                <span class="tp">DispatchQueue</span>.main.<span class="fn">asyncAfter</span>(deadline: .now() + duration * <span class="nm">0.5</span>) {
-                    phase = <span class="nm">1.5</span> <span class="cm">// 화면 밖 오른쪽까지</span>
-                }
-            }
-        }
-    }
-}</pre></div>
-      </div>
-
-      <!-- 프로필 사진 shimmer + scale -->
-      <div class="guide-section">
-        <div class="section-title">① DriverAvatarView (shimmer + scale)</div>
-        <div class="code-block"><pre><span class="kw">struct</span> <span class="tp">DriverAvatarView</span>: <span class="tp">View</span> {
+        <div class="code-block"><pre><span class="kw">struct</span> <span class="tp">DriverAvatarRingView</span>: <span class="tp">View</span> {
     <span class="kw">let</span> image: <span class="tp">Image</span>
     <span class="kw">let</span> size: <span class="tp">CGFloat</span> = <span class="nm">60</span>
-    <span class="kw">let</span> animDuration: <span class="tp">Double</span> = <span class="nm">7.0</span>
+    <span class="kw">var</span> onTap: (() -> <span class="tp">Void</span>)?
 
-    <span class="cm">// shimmer phase: -1(화면 밖 왼쪽) ~ 1.5(화면 밖 오른쪽)</span>
-    <span class="kw">@State private var</span> shimmerPhase: <span class="tp">CGFloat</span> = -<span class="nm">1</span>
-    <span class="cm">// scale: 1.0 ~ 1.1 (피크 72.5% 지점)</span>
     <span class="kw">@State private var</span> scale: <span class="tp">CGFloat</span> = <span class="nm">1.0</span>
+    <span class="kw">@State private var</span> ringStroke: <span class="tp">CGFloat</span> = <span class="nm">2</span>
+    <span class="kw">@State private var</span> ringOpacity: <span class="tp">Double</span> = <span class="nm">0</span>
+
+    <span class="kw">private let</span> gap: <span class="tp">CGFloat</span> = <span class="nm">2</span>
+    <span class="kw">private let</span> pulseDuration: <span class="tp">Double</span> = <span class="nm">0.6</span>
 
     <span class="kw">var</span> body: <span class="kw">some</span> <span class="tp">View</span> {
-        image
-            .<span class="fn">resizable</span>()
-            .<span class="fn">scaledToFill</span>()
-            .<span class="fn">frame</span>(width: size, height: size)
-            .<span class="fn">clipShape</span>(<span class="tp">Circle</span>()) <span class="cm">// 원형 클리핑</span>
-            .<span class="fn">scaleEffect</span>(scale)
-            .overlay(
-                <span class="cm">// shimmer 오버레이</span>
-                <span class="tp">ShimmerOverlay</span>(
-                    highlightOpacity: <span class="nm">0.3</span>,
-                    duration: animDuration
+        <span class="tp">ZStack</span> {
+            <span class="cm">// 링: scale 독립, 바깥으로만 확장</span>
+            <span class="tp">Circle</span>()
+                .stroke(<span class="tp">Color</span>(hex: <span class="st">"B9DDFD"</span>), lineWidth: ringStroke)
+                .frame(
+                    width: size + gap * <span class="nm">2</span> + ringStroke,
+                    height: size + gap * <span class="nm">2</span> + ringStroke
                 )
-                .<span class="fn">clipShape</span>(<span class="tp">Circle</span>())
-            )
-            .<span class="fn">onAppear</span> { <span class="fn">startAnimation</span>() }
+                .opacity(ringOpacity)
+
+            <span class="cm">// 아바타: scale 적용</span>
+            image
+                .resizable()
+                .scaledToFill()
+                .frame(width: size, height: size)
+                .scaleEffect(scale)
+                .clipShape(<span class="tp">Circle</span>())
+                .onTapGesture { onTap?() }
+        }
+        .frame(width: size + gap * <span class="nm">2</span> + <span class="nm">4</span>, height: size + gap * <span class="nm">2</span> + <span class="nm">4</span>)
     }
 
-    <span class="kw">private func</span> <span class="fn">startAnimation</span>() {
-        <span class="kw">let</span> idle = animDuration * <span class="nm">0.5</span>     <span class="cm">// 3.5s 대기</span>
-        <span class="kw">let</span> peak = animDuration * <span class="nm">0.725</span>    <span class="cm">// 5.075s 피크</span>
-        <span class="kw">let</span> total = animDuration            <span class="cm">// 7.0s 종료</span>
+    <span class="cm">/// 매칭 완료 진입 시 호칬 (백그라운드 복귀 시 호칬 금지)</span>
+    <span class="kw">func</span> <span class="fn">playPulseWithRing</span>() {
+        <span class="cm">// Task + @MainActor: DispatchQueue.main.asyncAfter 대체 (iOS 16+)</span>
+        <span class="cm">// 븷 해제 시 자동 취소, Swift Concurrency 표준 패턴</span>
+        <span class="tp">Task</span> { @<span class="tp">MainActor</span> <span class="kw">in</span>
+            <span class="kw">let</span> easing = <span class="tp">Animation</span>.timingCurve(<span class="nm">0.45</span>, <span class="nm">0</span>, <span class="nm">0.55</span>, <span class="nm">1</span>, duration: pulseDuration)
 
-        <span class="cm">// 대기 후 shimmer 시작</span>
-        <span class="tp">DispatchQueue</span>.main.<span class="fn">asyncAfter</span>(deadline: .now() + idle) {
-            <span class="cm">// scale up: easeIn (시작 완만)</span>
-            <span class="kw">withAnimation</span>(.<span class="fn">easeIn</span>(duration: peak - idle)) {
-                scale = <span class="nm">1.1</span>
+            <span class="cm">// fade in</span>
+            withAnimation(.easeIn(duration: <span class="nm">0.2</span>)) { ringOpacity = <span class="nm">0.4</span> }
+            <span class="kw">try</span> <span class="kw">await</span> <span class="tp">Task</span>.sleep(for: .seconds(<span class="nm">0.2</span>))
+
+            <span class="cm">// pulse 3회</span>
+            <span class="kw">for</span> _ <span class="kw">in</span> <span class="nm">0</span>..&lt;<span class="nm">3</span> {
+                <span class="cm">// down: scale 줄고 + ring 두껬워지고 + opacity 피크</span>
+                withAnimation(easing) { scale = <span class="nm">0.90</span>; ringStroke = <span class="nm">4</span>; ringOpacity = <span class="nm">1.0</span> }
+                <span class="kw">try</span> <span class="kw">await</span> <span class="tp">Task</span>.sleep(for: .seconds(pulseDuration))
+                <span class="cm">// up: 복귀</span>
+                withAnimation(easing) { scale = <span class="nm">1.0</span>; ringStroke = <span class="nm">2</span>; ringOpacity = <span class="nm">0.4</span> }
+                <span class="kw">try</span> <span class="kw">await</span> <span class="tp">Task</span>.sleep(for: .seconds(pulseDuration))
             }
-            <span class="cm">// scale down: 피크 이후 easeOut으로 복귀</span>
-            <span class="tp">DispatchQueue</span>.main.<span class="fn">asyncAfter</span>(deadline: .now() + (peak - idle)) {
-                <span class="kw">withAnimation</span>(.<span class="fn">easeOut</span>(duration: total - peak)) {
-                    scale = <span class="nm">1.0</span>
-                }
-            }
+
+            <span class="cm">// fade out</span>
+            withAnimation(.easeOut(duration: <span class="nm">0.2</span>)) { ringOpacity = <span class="nm">0</span> }
+            <span class="kw">try</span> <span class="kw">await</span> <span class="tp">Task</span>.sleep(for: .seconds(<span class="nm">0.2</span>))
+            ringStroke = <span class="nm">2</span>
         }
     }
 }</pre></div>
       </div>
 
-      <!-- 확대 뷰 -->
       <div class="guide-section">
-        <div class="section-title">② ProfilePhotoExpandView</div>
+        <div class="section-title">진입 시 실행 (매칭 완료 화면)</div>
+        <p class="guide-desc">
+          <code>.task</code> modifier 사용 — <code>onAppear</code>도다 안전하며, 뷰가 사라질 때 Task를 자동으로 취소합니다.
+        </p>
+        <div class="code-block"><pre><span class="kw">struct</span> <span class="tp">MatchedBottomSheetView</span>: <span class="tp">View</span> {
+    <span class="cm">// 매칭 API 응답 시 true / 백그라운드 → 포그라운드 복귀 시 false 유지</span>
+    <span class="kw">let</span> isNewMatch: <span class="tp">Bool</span>
+
+    <span class="kw">var</span> body: <span class="kw">some</span> <span class="tp">View</span> {
+        <span class="tp">DriverAvatarRingView</span>(
+            image: <span class="tp">Image</span>(<span class="st">"driver_photo"</span>),
+            onTap: { <span class="cm">/* 드라이버 프로필 이동 */</span> }
+        )
+        <span class="cm">// .task: 뷰 등장 시 실행, 뷰 소멸 시 자동 취소 (iOS 15+)</span>
+        .task {
+            <span class="kw">guard</span> isNewMatch <span class="kw">else</span> { <span class="kw">return</span> }
+            <span class="kw">try</span>? <span class="kw">await</span> <span class="tp">Task</span>.sleep(for: .seconds(<span class="nm">0.6</span>))
+            <span class="cm">// playPulseWithRing() 호칬 시점</span>
+            <span class="cm">// 실제 앱에서는 @StateObject ViewModel을 통해 제어 권장</span>
+        }
+    }
+}
+</pre></div>
+        <div class="note-box">
+          <strong>WWDC 2025 @Animatable 매크로:</strong>
+          커스텀 Shape나 복잡한 애니메이션 속성 정의 시 수동 <code>animatableData</code> 구현 대신
+          <code>@Animatable</code> 매크로를 사용하면 보일러플레이트를 크게 줄일 수 있습니다.
+          단, 이 컴포넌트첼럼 <code>@State</code> 기반 단순 애니메이션에는 적용 불필요합니다.
+        </div>
+      </div>
+
+      <div class="guide-section">
+        <div class="section-title">② ProfilePhotoExpandView (확대 뷰)</div>
         <div class="code-block"><pre><span class="kw">struct</span> <span class="tp">DriverProfileView</span>: <span class="tp">View</span> {
+    <span class="kw">let</span> driverImage: <span class="tp">Image</span>
     <span class="kw">@State private var</span> showExpandedPhoto = <span class="kw">false</span>
 
     <span class="kw">var</span> body: <span class="kw">some</span> <span class="tp">View</span> {
         <span class="tp">ZStack</span> {
-            <span class="cm">// 기존 프로필 콘텐츠</span>
             <span class="tp">ScrollView</span> {
-                <span class="tp">VStack</span> {
-                    <span class="tp">DriverAvatarView</span>(image: <span class="tp">Image</span>(<span class="st">"driver_photo"</span>))
-                        .<span class="fn">onTapGesture</span> {
-                            <span class="kw">withAnimation</span>(.<span class="fn">spring</span>(
-                                response: <span class="nm">0.35</span>,
-                                dampingFraction: <span class="nm">0.64</span>
-                            )) {
-                                showExpandedPhoto = <span class="kw">true</span>
-                            }
-                        }
-                }
-            }
-
-            <span class="cm">// 확대 뷰 (ZStack 위에 오버레이)</span>
-            <span class="kw">if</span> showExpandedPhoto {
-                <span class="cm">// Dim: 화면 내부에만 적용</span>
-                <span class="tp">Color</span>.black.opacity(<span class="nm">0.75</span>)
-                    .<span class="fn">ignoresSafeArea</span>(<span class="kw">false</span>) <span class="cm">// SafeArea 밖 dim 미적용</span>
-                    .<span class="fn">onTapGesture</span> {
-                        <span class="kw">withAnimation</span>(.<span class="fn">easeInOut</span>(duration: <span class="nm">0.25</span>)) {
-                            showExpandedPhoto = <span class="kw">false</span>
-                        }
+                <span class="tp">DriverAvatarRingView</span>(image: driverImage, onTap: {
+                    withAnimation(.spring(response: <span class="nm">0.35</span>, dampingFraction: <span class="nm">0.64</span>)) {
+                        showExpandedPhoto = <span class="kw">true</span>
                     }
-
-                <span class="cm">// 확대 사진: screenWidth - 20pt (좌우 10pt 여백)</span>
+                })
+            }
+            <span class="kw">if</span> showExpandedPhoto {
+                <span class="cm">// Dim: ignoresSafeArea(false) → 화면 내부에만 적용</span>
+                <span class="tp">Color</span>.black.opacity(<span class="nm">0.75</span>)
+                    .ignoresSafeArea(<span class="kw">false</span>)
+                    .onTapGesture {
+                        withAnimation(.easeInOut(duration: <span class="nm">0.25</span>)) { showExpandedPhoto = <span class="kw">false</span> }
+                    }
+                <span class="cm">// 확대 사진: screenWidth - 20pt (좌우 각 10pt 여백)</span>
                 <span class="kw">let</span> expandedSize = <span class="tp">UIScreen</span>.main.bounds.width - <span class="nm">20</span>
-                <span class="tp">Image</span>(<span class="st">"driver_photo"</span>)
-                    .<span class="fn">resizable</span>()
-                    .<span class="fn">scaledToFill</span>()
-                    .<span class="fn">frame</span>(width: expandedSize, height: expandedSize)
-                    .<span class="fn">clipShape</span>(<span class="tp">Circle</span>())
-                    .<span class="fn">transition</span>(.<span class="fn">scale</span>(scale: <span class="nm">0.3</span>).combined(with: .opacity))
-                    .<span class="fn">allowsHitTesting</span>(<span class="kw">false</span>)
+                driverImage.resizable().scaledToFill()
+                    .frame(width: expandedSize, height: expandedSize)
+                    .clipShape(<span class="tp">Circle</span>())
+                    .transition(.scale(scale: <span class="nm">0.3</span>).combined(with: .opacity))
+                    .allowsHitTesting(<span class="kw">false</span>)
             }
         }
     }
@@ -1445,187 +1270,126 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
 
     </div>
+    <!-- Android Compose 탭 -->
+    <div class="console-content" id="tab-android-content">
 
-    <!-- ══════════════════════════════
-         탭 3: Android Compose
-    ══════════════════════════════ -->
-    <div class="console-content" id="tab-android">
-
-      <!-- Shimmer 컴포넌트 -->
       <div class="guide-section">
-        <div class="section-title">ShimmerOverlay (재사용 컴포넌트)</div>
+        <div class="section-title">DriverAvatarRingView (Pulse + Ring 통합)</div>
         <p class="guide-desc">
-          앱 공통 <code>ShimmerBox</code>와 그라데이션 스펙을 공유합니다.
-          <strong>highlightAlpha: 0.3f</strong>, <strong>durationMs: 7000</strong>을 파라미터로 주입하세요.
+          <strong>Kotlin</strong> 사용. <code>Animatable</code> + <code>LaunchedEffect</code> + <code>async/awaitAll</code> 패턴으로 병렬 애니메이션을 동기화합니다. 2026년 기준 공식 권장 패턴입니다.
         </p>
-        <div class="code-block"><pre><span class="cm">/**
- * 공통 ShimmerBox와 동일한 그라데이션 스펙
- * baseColor: Transparent (넛지용) / Color(0xFFE8EAED) (스켈레톤용)
- * highlightAlpha: 0.3f (넛지용) / 0.2f (스켈레톤용)
- * durationMs: 7000 (넛지용) / 1500 (스켈레톤용)
- */</span>
-<span class="kw">@Composable</span>
-<span class="kw">fun</span> <span class="fn">ShimmerOverlay</span>(
-    modifier: <span class="tp">Modifier</span> = <span class="tp">Modifier</span>,
-    highlightAlpha: <span class="tp">Float</span> = <span class="nm">0.3f</span>,
-    durationMs: <span class="tp">Int</span> = <span class="nm">7000</span>
-) {
-    <span class="kw">val</span> infiniteTransition = <span class="fn">rememberInfiniteTransition</span>(label = <span class="st">"shimmer"</span>)
-
-    <span class="cm">// 0f ~ 1f 범위로 진행 (50% idle은 keyframe으로 처리)</span>
-    <span class="kw">val</span> progress <span class="kw">by</span> infiniteTransition.<span class="fn">animateFloat</span>(
-        initialValue = <span class="nm">0f</span>,
-        targetValue = <span class="nm">1f</span>,
-        animationSpec = <span class="fn">infiniteRepeatable</span>(
-            animation = <span class="fn">tween</span>(durationMs, easing = <span class="tp">LinearEasing</span>),
-            repeatMode = <span class="tp">RepeatMode</span>.Restart
-        ),
-        label = <span class="st">"shimmerProgress"</span>
-    )
-
-    <span class="cm">// 0~0.5: idle (shimmer 화면 밖) / 0.5~1.0: 흐름</span>
-    <span class="kw">val</span> shimmerOffset = <span class="kw">if</span> (progress < <span class="nm">0.5f</span>) -<span class="nm">1f</span>
-                        <span class="kw">else</span> (progress - <span class="nm">0.5f</span>) / <span class="nm">0.5f</span> * <span class="nm">2f</span> - <span class="nm">1f</span>
-
-    <span class="tp">Box</span>(
-        modifier = modifier.<span class="fn">drawWithContent</span> {
-            <span class="fn">drawContent</span>()
-            <span class="fn">drawRect</span>(
-                brush = <span class="tp">Brush</span>.<span class="fn">horizontalGradient</span>(
-                    colors = <span class="fn">listOf</span>(
-                        <span class="tp">Color</span>.Transparent,
-                        <span class="tp">Color</span>.White.<span class="fn">copy</span>(alpha = highlightAlpha),
-                        <span class="tp">Color</span>.Transparent
-                    ),
-                    <span class="cm">// 폭: 컨테이너의 50%</span>
-                    startX = size.width * shimmerOffset,
-                    endX = size.width * (shimmerOffset + <span class="nm">0.5f</span>)
-                )
-            )
-        }
-    )
-}</pre></div>
-      </div>
-
-      <!-- 프로필 사진 shimmer + scale -->
-      <div class="guide-section">
-        <div class="section-title">① DriverAvatarView (shimmer + scale)</div>
         <div class="code-block"><pre><span class="kw">@Composable</span>
-<span class="kw">fun</span> <span class="fn">DriverAvatarView</span>(
+<span class="kw">fun</span> <span class="fn">DriverAvatarRingView</span>(
     painter: <span class="tp">Painter</span>,
     size: <span class="tp">Dp</span> = <span class="nm">60</span>.dp,
-    onTap: () -> <span class="tp">Unit</span> = {}
+    onTap: () -> <span class="tp">Unit</span> = {},
+    <span class="cm">// 매칭 완료 신규 진입 시 true / 백그라운드 복귀 시 false 유지</span>
+    isNewMatch: <span class="tp">Boolean</span> = <span class="kw">false</span>
 ) {
-    <span class="kw">val</span> animDurationMs = <span class="nm">7000</span>
-    <span class="kw">val</span> infiniteTransition = <span class="fn">rememberInfiniteTransition</span>(label = <span class="st">"avatar"</span>)
+    <span class="kw">val</span> gap = <span class="nm">2</span>.dp; <span class="kw">val</span> minStroke = <span class="nm">2</span>.dp; <span class="kw">val</span> maxStroke = <span class="nm">4</span>.dp
+    <span class="kw">val</span> pulseDurationMs = <span class="nm">600</span>
+    <span class="kw">val</span> easing = <span class="tp">CubicBezierEasing</span>(<span class="nm">0.45f</span>, <span class="nm">0f</span>, <span class="nm">0.55f</span>, <span class="nm">1f</span>)
 
-    <span class="cm">// scale 0→1 진행값</span>
-    <span class="kw">val</span> progress <span class="kw">by</span> infiniteTransition.<span class="fn">animateFloat</span>(
-        initialValue = <span class="nm">0f</span>,
-        targetValue = <span class="nm">1f</span>,
-        animationSpec = <span class="fn">infiniteRepeatable</span>(
-            animation = <span class="fn">tween</span>(animDurationMs, easing = <span class="tp">LinearEasing</span>),
-            repeatMode = <span class="tp">RepeatMode</span>.Restart
-        ),
-        label = <span class="st">"scaleProgress"</span>
-    )
+    <span class="cm">// Animatable로 각 속성 독립 제어</span>
+    <span class="kw">val</span> scale = remember { <span class="fn">Animatable</span>(<span class="nm">1f</span>) }
+    <span class="kw">val</span> ringStrokeDp = remember { <span class="fn">Animatable</span>(minStroke.value) }
+    <span class="kw">val</span> ringOpacity = remember { <span class="fn">Animatable</span>(<span class="nm">0f</span>) }
 
-    <span class="cm">// scale 계산: idle 50%, 피크 72.5%, 종료 100%</span>
-    <span class="kw">val</span> scale = <span class="kw">when</span> {
-        progress < <span class="nm">0.5f</span>  -> <span class="nm">1.0f</span>  <span class="cm">// idle</span>
-        progress < <span class="nm">0.725f</span> -> {   <span class="cm">// scale up (easeIn)</span>
-            <span class="kw">val</span> t = (progress - <span class="nm">0.5f</span>) / <span class="nm">0.225f</span>
-            <span class="nm">1.0f</span> + (t * t) * <span class="nm">0.1f</span>   <span class="cm">// quadratic easeIn</span>
+    <span class="fn">LaunchedEffect</span>(isNewMatch) {
+        <span class="kw">if</span> (!isNewMatch) <span class="kw">return</span>@LaunchedEffect
+        delay(<span class="nm">600L</span>)
+        ringOpacity.animateTo(<span class="nm">0.4f</span>, tween(<span class="nm">200</span>))
+        repeat(<span class="nm">3</span>) {
+            <span class="cm">// down: 병렬 실행</span>
+            listOf(
+                async { scale.animateTo(<span class="nm">0.90f</span>, tween(pulseDurationMs, easing = easing)) },
+                async { ringStrokeDp.animateTo(maxStroke.value, tween(pulseDurationMs, easing = easing)) },
+                async { ringOpacity.animateTo(<span class="nm">1.0f</span>, tween(pulseDurationMs, easing = easing)) }
+            ).awaitAll()
+            <span class="cm">// up: 병렬 실행</span>
+            listOf(
+                async { scale.animateTo(<span class="nm">1.0f</span>, tween(pulseDurationMs, easing = easing)) },
+                async { ringStrokeDp.animateTo(minStroke.value, tween(pulseDurationMs, easing = easing)) },
+                async { ringOpacity.animateTo(<span class="nm">0.4f</span>, tween(pulseDurationMs, easing = easing)) }
+            ).awaitAll()
         }
-        <span class="kw">else</span> -> {               <span class="cm">// scale down (easeOut)</span>
-            <span class="kw">val</span> t = (<span class="nm">1.0f</span> - progress) / (<span class="nm">1.0f</span> - <span class="nm">0.725f</span>)
-            <span class="nm">1.0f</span> + t * t * <span class="nm">0.1f</span>   <span class="cm">// quadratic easeOut</span>
-        }
+        ringOpacity.animateTo(<span class="nm">0f</span>, tween(<span class="nm">200</span>))
+        ringStrokeDp.snapTo(minStroke.value)
     }
 
     <span class="tp">Box</span>(
-        modifier = <span class="tp">Modifier</span>
-            .<span class="fn">size</span>(size)
-            .<span class="fn">clip</span>(<span class="tp">CircleShape</span>)           <span class="cm">// 원형 클리핑</span>
-            .<span class="fn">graphicsLayer</span>(scaleX = scale, scaleY = scale)
-            .<span class="fn">clickable</span>(onClick = onTap)
+        contentAlignment = <span class="tp">Alignment</span>.Center,
+        modifier = <span class="tp">Modifier</span>.size(size + gap * <span class="nm">2</span> + maxStroke * <span class="nm">2</span>)
     ) {
+        <span class="cm">// 링: Canvas로 직접 그리기 (scale 완전 독립)</span>
+        <span class="tp">Canvas</span>(modifier = <span class="tp">Modifier</span>.matchParentSize()) {
+            <span class="kw">val</span> strokePx = ringStrokeDp.value.dp.toPx()
+            <span class="kw">val</span> avatarRadiusPx = size.toPx() / <span class="nm">2</span>
+            <span class="kw">val</span> gapPx = gap.toPx()
+            <span class="cm">// 바깥으로만 확장: 안쪽 edge = avatarRadius + gap 고정</span>
+            <span class="kw">val</span> ringRadius = avatarRadiusPx + gapPx + strokePx / <span class="nm">2</span>
+            drawCircle(
+                color = <span class="tp">Color</span>(<span class="nm">0xFFB9DDFD</span>), radius = ringRadius,
+                style = <span class="tp">Stroke</span>(width = strokePx), alpha = ringOpacity.value
+            )
+        }
+        <span class="cm">// 아바타: scale 적용, 원형 클리핑</span>
         <span class="tp">Image</span>(
-            painter = painter,
-            contentDescription = <span class="st">"드라이버 프로필"</span>,
+            painter = painter, contentDescription = <span class="st">"드라이버 프로필"</span>,
             contentScale = <span class="tp">ContentScale</span>.Crop,
-            modifier = <span class="tp">Modifier</span>.<span class="fn">fillMaxSize</span>()
-        )
-        <span class="cm">// shimmer 오버레이</span>
-        <span class="fn">ShimmerOverlay</span>(
-            modifier = <span class="tp">Modifier</span>.<span class="fn">fillMaxSize</span>(),
-            highlightAlpha = <span class="nm">0.3f</span>,
-            durationMs = animDurationMs
+            modifier = <span class="tp">Modifier</span>.size(size)
+                .graphicsLayer(scaleX = scale.value, scaleY = scale.value)
+                .clip(<span class="tp">CircleShape</span>)
+                .clickable(interactionSource = remember { <span class="tp">MutableInteractionSource</span>() },
+                    indication = <span class="kw">null</span>, onClick = onTap)
         )
     }
 }</pre></div>
       </div>
 
-      <!-- 확대 뷰 -->
       <div class="guide-section">
-        <div class="section-title">② ProfilePhotoExpandView</div>
+        <div class="section-title">진입 시 실행 (매칭 완료 화면)</div>
+        <div class="code-block"><pre><span class="kw">@Composable</span>
+<span class="kw">fun</span> <span class="fn">MatchedBottomSheetScreen</span>(painter: <span class="tp">Painter</span>) {
+    <span class="cm">// 매칭 API 응답 시 true / 백그라운드 → 포그라운드 복귀 시 false 유지</span>
+    <span class="kw">var</span> isNewMatch <span class="kw">by</span> remember { <span class="fn">mutableStateOf</span>(<span class="kw">true</span>) }
+    <span class="tp">Column</span> {
+        <span class="fn">DriverAvatarRingView</span>(painter = painter, isNewMatch = isNewMatch,
+            onTap = { <span class="cm">/* 드라이버 프로필 이동 */</span> })
+    }
+}</pre></div>
+      </div>
+
+      <div class="guide-section">
+        <div class="section-title">② ProfilePhotoExpandScreen (확대 뷰)</div>
         <div class="code-block"><pre><span class="kw">@Composable</span>
 <span class="kw">fun</span> <span class="fn">DriverProfileScreen</span>(painter: <span class="tp">Painter</span>) {
-    <span class="kw">var</span> showExpanded <span class="kw">by</span> <span class="fn">remember</span> { <span class="fn">mutableStateOf</span>(<span class="kw">false</span>) }
-
-    <span class="cm">// 확대 애니메이션: scale 0.3 → 1.0, spring</span>
+    <span class="kw">var</span> showExpanded <span class="kw">by</span> remember { <span class="fn">mutableStateOf</span>(<span class="kw">false</span>) }
     <span class="kw">val</span> expandScale <span class="kw">by</span> <span class="fn">animateFloatAsState</span>(
         targetValue = <span class="kw">if</span> (showExpanded) <span class="nm">1.0f</span> <span class="kw">else</span> <span class="nm">0.3f</span>,
-        animationSpec = <span class="fn">spring</span>(
-            dampingRatio = <span class="nm">0.64f</span>,
-            stiffness = <span class="tp">Spring</span>.StiffnessMediumLow
-        ),
+        animationSpec = spring(dampingRatio = <span class="nm">0.64f</span>, stiffness = <span class="tp">Spring</span>.StiffnessMediumLow),
         label = <span class="st">"expandScale"</span>
     )
     <span class="kw">val</span> dimAlpha <span class="kw">by</span> <span class="fn">animateFloatAsState</span>(
         targetValue = <span class="kw">if</span> (showExpanded) <span class="nm">0.75f</span> <span class="kw">else</span> <span class="nm">0f</span>,
-        animationSpec = <span class="fn">tween</span>(<span class="nm">300</span>),
-        label = <span class="st">"dimAlpha"</span>
+        animationSpec = tween(<span class="nm">250</span>, easing = <span class="tp">FastOutSlowInEasing</span>), label = <span class="st">"dimAlpha"</span>
     )
-
-    <span class="tp">Box</span>(modifier = <span class="tp">Modifier</span>.<span class="fn">fillMaxSize</span>()) {
-        <span class="cm">// 프로필 콘텐츠</span>
-        <span class="tp">Column</span> {
-            <span class="fn">DriverAvatarView</span>(
-                painter = painter,
-                onTap = { showExpanded = <span class="kw">true</span> }
-            )
-            <span class="cm">// ... 나머지 콘텐츠</span>
-        }
-
-        <span class="cm">// Dim + 확대 사진 (화면 내부 ZStack)</span>
+    <span class="tp">Box</span>(modifier = <span class="tp">Modifier</span>.fillMaxSize()) {
+        <span class="tp">Column</span> { <span class="fn">DriverAvatarRingView</span>(painter = painter, onTap = { showExpanded = <span class="kw">true</span> }) }
         <span class="kw">if</span> (showExpanded || expandScale > <span class="nm">0.01f</span>) {
-            <span class="cm">// Dim: Box 크기 내에서만 적용 (fillMaxSize = 화면 내부)</span>
-            <span class="tp">Box</span>(
-                modifier = <span class="tp">Modifier</span>
-                    .<span class="fn">fillMaxSize</span>()
-                    .<span class="fn">background</span>(<span class="tp">Color</span>.Black.<span class="fn">copy</span>(alpha = dimAlpha))
-                    .<span class="fn">clickable</span> {
-                        showExpanded = <span class="kw">false</span>
-                    },
+            <span class="tp">Box</span>(modifier = <span class="tp">Modifier</span>.matchParentSize()
+                .background(<span class="tp">Color</span>.Black.copy(alpha = dimAlpha))
+                .clickable(interactionSource = remember { <span class="tp">MutableInteractionSource</span>() },
+                    indication = <span class="kw">null</span>) { showExpanded = <span class="kw">false</span> },
                 contentAlignment = <span class="tp">Alignment</span>.Center
             ) {
-                <span class="kw">val</span> screenWidth = <span class="tp">LocalConfiguration</span>.current.screenWidthDp.dp
-                <span class="kw">val</span> expandedSize = screenWidth - <span class="nm">20</span>.dp <span class="cm">// 좌우 10dp 여백</span>
-
-                <span class="tp">Image</span>(
-                    painter = painter,
-                    contentDescription = <span class="kw">null</span>,
+                <span class="kw">val</span> expandedSize = <span class="tp">LocalConfiguration</span>.current.screenWidthDp.dp - <span class="nm">20</span>.dp
+                <span class="tp">Image</span>(painter = painter, contentDescription = <span class="kw">null</span>,
                     contentScale = <span class="tp">ContentScale</span>.Crop,
-                    modifier = <span class="tp">Modifier</span>
-                        .<span class="fn">size</span>(expandedSize)
-                        .<span class="fn">clip</span>(<span class="tp">CircleShape</span>)       <span class="cm">// 원형 유지</span>
-                        .<span class="fn">graphicsLayer</span>(
-                            scaleX = expandScale,
-                            scaleY = expandScale,
-                            alpha = expandScale.coerceAtMost(<span class="nm">1f</span>)
-                        )
-                        .<span class="fn">clickable</span>(<span class="fn">enabled</span> = <span class="kw">false</span>) {}
+                    modifier = <span class="tp">Modifier</span>.size(expandedSize).clip(<span class="tp">CircleShape</span>)
+                        .graphicsLayer(scaleX = expandScale, scaleY = expandScale,
+                            alpha = expandScale.coerceIn(<span class="nm">0f</span>, <span class="nm">1f</span>))
+                        .clickable(enabled = <span class="kw">false</span>) {}
                 )
             }
         }
@@ -1641,107 +1405,10 @@ document.addEventListener('DOMContentLoaded', () => {
 function switchTab(name) {
   document.querySelectorAll('.console-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.console-content').forEach(c => c.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
+  const tab = document.getElementById('tab-' + (name === 'android' ? 'android-content' : name));
+  if (tab) tab.classList.add('active');
   event.target.classList.add('active');
 }
 </script>
-
-<script>
-/* ════ Guide JS ════ */
-
-function switchTab(name) {
-  document.querySelectorAll('.console-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.console-content').forEach(c => c.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  event.target.classList.add('active');
-}
-
-
-/* ════ App JS ════ */
-
-
-function openPhotoModal(img) {
-  const modal = document.getElementById('photoModal');
-  const modalImg = document.getElementById('photoModalImg');
-  modalImg.src = img.src;
-  modal.classList.add('active');
-}
-function closePhotoModal() {
-  const modal = document.getElementById('photoModal');
-  modal.classList.remove('active');
-}
-
-/* ── Pulse: 매칭 완료 화면 진입 시 1회만 실행 ── */
-function replayPulse() {
-  const btn = document.getElementById('replayBtn');
-  if (!btn) return;
-  btn.classList.add('playing');
-  playAvatarPulse();
-  // 2s(애니메이션) + 여유 후 버튼 복구
-  setTimeout(() => btn.classList.remove('playing'), 2800);
-}
-
-function playAvatarPulse() {
-  const wrapper = document.getElementById('avatarWrapper');
-  const container = document.getElementById('avatarContainer');
-  if (!wrapper) return;
-
-  // 이미 재생 중이면 초기화
-  wrapper.style.animation = 'none';
-  container.classList.remove('playing');
-
-  // reflow: 두 요소 모두 리셋 확정
-  wrapper.offsetHeight;
-  container.offsetHeight;
-
-  // 링 + pulse를 rAF로 같은 프레임에서 동시 시작
-  requestAnimationFrame(() => {
-    container.classList.add('playing');
-    wrapper.style.animation = 'avatarPulse 2.4s linear 1 forwards';
-
-    wrapper.addEventListener('animationend', function onEnd() {
-      wrapper.style.animation = 'none';
-      container.classList.remove('playing');
-      wrapper.removeEventListener('animationend', onEnd);
-    });
-  });
-}
-
-/* 매칭 완료 화면 진입 시: pulse 실행 */
-function goToProfile() {
-  const main = document.getElementById('pageMain');
-  const profile = document.getElementById('pageProfile');
-  const app = document.querySelector('.app');
-  app.style.height = main.offsetHeight + 'px';
-  app.style.overflow = 'hidden';
-  main.classList.add('slide-out');
-  profile.classList.add('slide-in');
-  setTimeout(() => {
-    app.style.height = profile.offsetHeight + 'px';
-  }, 350);
-}
-
-/* goBack: pulse 없음 (포그라운드 복귀 개념과 동일) */
-function goBack() {
-  const main = document.getElementById('pageMain');
-  const profile = document.getElementById('pageProfile');
-  const app = document.querySelector('.app');
-  app.style.height = profile.offsetHeight + 'px';
-  main.classList.remove('slide-out');
-  profile.classList.remove('slide-in');
-  setTimeout(() => {
-    app.style.height = '';
-    app.style.overflow = '';
-  }, 350);
-}
-
-/* 페이지 최초 로드 = 매칭 완료 화면 첫 진입 → pulse 실행 */
-document.addEventListener('DOMContentLoaded', () => {
-  // 짧은 딜레이 후 실행 (화면 렌더 완료 후)
-  setTimeout(playAvatarPulse, 600);
-});
-
-</script>
-
 </body>
 </html>
