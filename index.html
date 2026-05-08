@@ -527,74 +527,7 @@ body {
   overflow: visible;
 }
 
-/* ── 그라데이션 링 circle ── */
-.ring-svg .circle-gradient {
-  fill: none;
-  stroke: url(#blueGradient);
-  stroke-width: 2;
-  stroke-linecap: round;
-  /* 12시 방향에서 시작: rotate -90deg (cx=34, cy=34 중심) */
-  transform: rotate(-90deg);
-  transform-origin: 34px 34px;
-  /* 둘레 ≈ 207.3 */
-  stroke-dasharray: 207.3;
-  stroke-dashoffset: 0;
-  opacity: 0;
-  opacity: 0; /* 링 비활성화 */
-}
 
-/* ── 단색 링 circle ── */
-.ring-svg .circle-solid {
-  fill: none;
-  stroke: #32A2FA;
-  stroke-width: 2;
-  stroke-linecap: round;
-  transform: rotate(-90deg);
-  transform-origin: 34px 34px;
-  stroke-dasharray: 207.3;
-  stroke-dashoffset: 0;
-  opacity: 0;
-  opacity: 0; /* 링 비활성화 */
-}
-
-/* ═══════════════════════════════
-   Keyframes — 총 8s
-   0~65%:  idle (5.2s)
-   65~75%: draw-in, 선이 그려짐 (0.8s)
-   75~88%: 완성 유지 (1.04s)
-   88~100%: fade out (0.96s)
-═══════════════════════════════ */
-
-@keyframes breathingGradient {
-  /*
-    총 10s 주기
-    0~50%:   idle (5s) — 완전히 없는 상태
-    50~65%:  fade in (1.5s) — 서서히 나타남
-    65~75%:  유지 (1s) — 피크
-    75~100%: fade out (2.5s) — 천천히 사라짐
-  */
-  0%   { opacity: 0; }
-  50%  { opacity: 0; }
-  65%  { opacity: 0.55; }
-  75%  { opacity: 0.55; }
-  100% { opacity: 0; }
-}
-
-@keyframes breathingSolid {
-  /*
-    동일 타이밍
-  */
-  0%   { opacity: 0; }
-  50%  { opacity: 0; }
-  65%  { opacity: 0.55; }
-  75%  { opacity: 0.55; }
-  100% { opacity: 0; }
-}
-
-/* ── display 전환 ── */
-.ring-svg { display: none; }
-.show-gradient .ring-svg.svg-gradient { display: block; }
-.show-solid    .ring-svg.svg-solid    { display: block; }
 
 /* profile styles */
 .screen-profile{width:393px;min-height:852px;background:#fff;border-radius:40px;box-shadow:0 20px 60px rgba(0,0,0,0.25);overflow:clip;display:flex;flex-direction:column;position:relative;}
@@ -743,7 +676,7 @@ body {
   <span class="label-desc">프로필 위로 흐르는 은은한 빛</span>
 </div>
 
-<div class="screen show-gradient" id="screen">
+<div class="screen" id="screen">
   <div class="map-grid"></div>
   <div class="statusbar">
     <span class="status-time">12:45</span>
@@ -817,25 +750,7 @@ body {
               </svg>
               <div class="avatar-wrapper" id="avatarWrapper">
 
-                <!-- ① 그라데이션 링: breathing (opacity 0→0.55→0) -->
-                <svg class="ring-svg svg-gradient" viewBox="0 0 68 68" xmlns="http://www.w3.org/2000/svg">
-                  <defs>
-                    <linearGradient id="blueGradient" x1="1" y1="0" x2="0" y2="1">
-                      <stop offset="0%"   stop-color="#BAE0FD"/>
-                      <stop offset="40%"  stop-color="#7EC8FB"/>
-                      <stop offset="75%"  stop-color="#5AB0F7"/>
-                      <stop offset="100%" stop-color="#3A8FE8"/>
-                    </linearGradient>
-                  </defs>
-                  <circle class="circle-gradient" cx="34" cy="34" r="33"/>
-                </svg>
-
-                <!-- ② 단색 링: breathing (opacity 0→0.55→0) -->
-                <svg class="ring-svg svg-solid" viewBox="0 0 68 68" xmlns="http://www.w3.org/2000/svg">
-                  <circle class="circle-solid" cx="34" cy="34" r="33"/>
-                </svg>
-
-                <!-- 아바타 본체: 가상 인물 사진 + shimmer -->
+                <!-- 아바타 본체: 가상 인물 사진 -->
                 <div class="avatar">
                   <!-- 가상 인물 SVG -->
                   <svg class="avatar-photo" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
@@ -1058,7 +973,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       <!-- 전체 타이밍 -->
       <div class="guide-section">
-        <div class="section-title">① Pulse + Ring 전체 타이밍 (duration: 2.4s)</div>
+        <div class="section-title">① Pulse + Ring 전체 타이밍 (duration: 3.6s)</div>
         <p class="guide-desc">scale이 줄어들 때(눌림) 링이 두꺼워지고 선명해집니다. scale이 커질 때(복귀) 링이 얇아지고 연해집니다.</p>
         <table class="spec-table">
           <tr><th>구간</th><th>시간</th><th>scale</th><th>stroke-width</th><th>opacity</th></tr>
@@ -1080,7 +995,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <tr><th>속성</th><th>값</th><th>설명</th></tr>
           <tr><td class="spec-key">minScale</td><td class="spec-val">1.0</td><td class="spec-desc">기본 크기</td></tr>
           <tr><td class="spec-key">maxScale (피크)</td><td class="spec-val">0.90</td><td class="spec-desc">눌림 최대</td></tr>
-          <tr><td class="spec-key">duration</td><td class="spec-val">2.4s</td><td class="spec-desc">총 1회 실행</td></tr>
+          <tr><td class="spec-key">duration</td><td class="spec-val">3.6s</td><td class="spec-desc">총 1회 실행 (pulse 3회 × 1.2s)</td></tr>
           <tr><td class="spec-key">repeatCount</td><td class="spec-val">1회 실행 (pulse 3회 반복)</td><td class="spec-desc">진입 시 단 1회 실행, pulse는 3회 반복</td></tr>
           <tr><td class="spec-key">easing</td><td class="spec-val">cubic-bezier(0.45, 0, 0.55, 1)</td><td class="spec-desc">시작/끝 완만, 중간 가속</td></tr>
           <tr><td class="spec-key">clipShape</td><td class="spec-val">Circle</td><td class="spec-desc">원형 클리핑 유지</td></tr>
@@ -1103,9 +1018,10 @@ document.addEventListener('DOMContentLoaded', () => {
           <tr><td class="spec-key">container</td><td class="spec-val">76×76px</td><td class="spec-desc">60(아바타) + 2×2(gap) + 4×2(stroke) = 76</td></tr>
         </table>
         <div class="note-box" style="margin-top:12px">
-          <strong>바깥으로만 확장되는 원리 (SVG 기준)</strong><br>
-          안쪽 edge = r - strokeWidth/2 = 32px 고정 (아바타 반지름 30 + gap 2)<br>
-          strokeWidth=2 → r=33 / strokeWidth=4 → r=34
+          <strong>바깥으로만 확장되는 원리</strong><br>
+          안쪽 edge = 아바타 반지름(30) + gap(2) = 32px 고정<br>
+          iOS: <code>frame(width: size + gap*2 + ringStroke)</code>으로 바깥 확장<br>
+          Android: <code>ringRadius = avatarRadius + gap + strokePx/2</code>
         </div>
       </div>
 
@@ -1300,6 +1216,8 @@ document.addEventListener('DOMContentLoaded', () => {
         delay(<span class="nm">600L</span>)
         ringOpacity.animateTo(<span class="nm">0.4f</span>, tween(<span class="nm">200</span>))
         repeat(<span class="nm">3</span>) {
+            <span class="cm">// async/awaitAll 사용을 위해 coroutineScope 필요</span>
+            coroutineScope {
             <span class="cm">// down: 병렬 실행</span>
             listOf(
                 async { scale.animateTo(<span class="nm">0.90f</span>, tween(pulseDurationMs, easing = easing)) },
@@ -1312,6 +1230,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 async { ringStrokeDp.animateTo(minStroke.value, tween(pulseDurationMs, easing = easing)) },
                 async { ringOpacity.animateTo(<span class="nm">0.4f</span>, tween(pulseDurationMs, easing = easing)) }
             ).awaitAll()
+            } <span class="cm">// end coroutineScope</span>
         }
         ringOpacity.animateTo(<span class="nm">0f</span>, tween(<span class="nm">200</span>))
         ringStrokeDp.snapTo(minStroke.value)
