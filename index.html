@@ -1074,10 +1074,10 @@ document.addEventListener('DOMContentLoaded', () => {
         .frame(width: size + gap * <span class="nm">2</span> + <span class="nm">4</span>, height: size + gap * <span class="nm">2</span> + <span class="nm">4</span>)
     }
 
-    <span class="cm">/// 매칭 완료 진입 시 호칬 (백그라운드 복귀 시 호칬 금지)</span>
+    <span class="cm">/// 매칭 완료 진입 시 호출 (백그라운드 복귀 시 호출 금지)</span>
     <span class="kw">func</span> <span class="fn">playPulseWithRing</span>() {
         <span class="cm">// Task + @MainActor: DispatchQueue.main.asyncAfter 대체 (iOS 16+)</span>
-        <span class="cm">// 븷 해제 시 자동 취소, Swift Concurrency 표준 패턴</span>
+        <span class="cm">// 뷰 해제 시 자동 취소, Swift Concurrency 표준 패턴</span>
         <span class="tp">Task</span> { @<span class="tp">MainActor</span> <span class="kw">in</span>
             <span class="kw">let</span> easing = <span class="tp">Animation</span>.timingCurve(<span class="nm">0.45</span>, <span class="nm">0</span>, <span class="nm">0.55</span>, <span class="nm">1</span>, duration: pulseDuration)
 
@@ -1087,7 +1087,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             <span class="cm">// pulse 3회</span>
             <span class="kw">for</span> _ <span class="kw">in</span> <span class="nm">0</span>..&lt;<span class="nm">3</span> {
-                <span class="cm">// down: scale 줄고 + ring 두껬워지고 + opacity 피크</span>
+                <span class="cm">// down: scale 줄고 + ring 두꺼워지고 + opacity 피크</span>
                 withAnimation(easing) { scale = <span class="nm">0.90</span>; ringStroke = <span class="nm">4</span>; ringOpacity = <span class="nm">1.0</span> }
                 <span class="kw">try</span> <span class="kw">await</span> <span class="tp">Task</span>.sleep(for: .seconds(pulseDuration))
                 <span class="cm">// up: 복귀</span>
@@ -1122,7 +1122,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .task {
             <span class="kw">guard</span> isNewMatch <span class="kw">else</span> { <span class="kw">return</span> }
             <span class="kw">try</span>? <span class="kw">await</span> <span class="tp">Task</span>.sleep(for: .seconds(<span class="nm">0.6</span>))
-            <span class="cm">// playPulseWithRing() 호칬 시점</span>
+            <span class="cm">// playPulseWithRing() 호출 시점</span>
             <span class="cm">// 실제 앱에서는 @StateObject ViewModel을 통해 제어 권장</span>
         }
     }
